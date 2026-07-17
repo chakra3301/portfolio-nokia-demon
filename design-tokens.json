@@ -1,0 +1,47 @@
+{
+  "$comment": "NOKIADEMON — astrolabe portfolio. Near-monochrome instrument. One white-hot accent for mechanism moments; project colors quarantined to their ring-mark + daemon-stack; phosphor green only in the root terminal.",
+  "color": {
+    "bg": "#06070A",
+    "fg": "#ECEEF0",
+    "muted": "#7C8088",
+    "chrome": { "base": "#B8BCC2", "hi": "#E4E6E9", "lo": "#2A2D31" },
+    "whiteHot": "#FFFFFF",
+    "terminalPhosphor": "#3CFF9E",
+    "project": {
+      "orion":   "#4DE8FF",
+      "ekko":    "#B46BFF",
+      "joust":   "#FFB84D",
+      "widow":   "#FF3B5C",
+      "finders": "#E8C468",
+      "selected": "#D8CFC0"
+    }
+  },
+  "typography": {
+    "family": {
+      "display": "'Martian Mono', 'IBM Plex Mono', ui-monospace, monospace",
+      "text": "'IBM Plex Mono', ui-monospace, monospace",
+      "glyph": "'Zen Kaku Gothic New', 'IBM Plex Mono', sans-serif"
+    },
+    "tracking": { "eyebrow": "0.28em", "label": "0.2em", "normal": "0" },
+    "scale": {
+      "xs": "clamp(0.68rem, 0.64rem + 0.2vw, 0.75rem)",
+      "sm": "clamp(0.8rem, 0.76rem + 0.2vw, 0.9rem)",
+      "base": "clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem)",
+      "lg": "clamp(1.15rem, 1rem + 0.6vw, 1.5rem)",
+      "xl": "clamp(1.8rem, 1.3rem + 2vw, 3rem)",
+      "display": "clamp(2.6rem, 1.4rem + 6vw, 7rem)"
+    }
+  },
+  "space": { "1": "0.25rem", "2": "0.5rem", "3": "0.75rem", "4": "1rem", "6": "1.5rem", "8": "2rem", "12": "3rem", "16": "4rem", "24": "6rem" },
+  "motion": {
+    "ease": { "out": "cubic-bezier(0.22, 1, 0.36, 1)", "inOut": "cubic-bezier(0.76, 0, 0.24, 1)", "seat": "cubic-bezier(0.34, 1.4, 0.5, 1)" },
+    "dur": { "fast": "160ms", "base": "340ms", "slow": "720ms", "warp": "1400ms" }
+  },
+  "dither": {
+    "$comment": "Ordered-dither post pass. Pitch in device px; intensity 0..1. Mode: 0 engrave, 1 warp-glitch, 2 clean, 3 crt.",
+    "astrolabe": { "pitch": 2.0, "intensity": 0.55, "mode": 0 },
+    "warp":      { "pitch": 3.5, "intensity": 0.85, "mode": 1 },
+    "daemon":    { "pitch": 2.0, "intensity": 0.28, "mode": 2 },
+    "terminal":  { "pitch": 4.0, "intensity": 0.9,  "mode": 3 }
+  }
+}

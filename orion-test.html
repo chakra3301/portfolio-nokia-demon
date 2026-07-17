@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>orion fx harness</title>
+  <style>body{margin:0;background:#141824}canvas{display:block}</style></head>
+  <body>
+    <script type="module">
+      import { createOrionFx } from "/src/orion-fx.js";
+      const fx = createOrionFx({ reduced: false });
+      document.body.appendChild(fx.canvas);
+      fx.start();
+      window.__orion = fx;
+      let last = performance.now();
+      (function loop(){
+        const now = performance.now();
+        fx.update(Math.min((now-last)/1000, 0.05));
+        last = now;
+        requestAnimationFrame(loop);
+      })();
+    </script>
+  </body>
+</html>

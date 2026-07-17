@@ -1,0 +1,32 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+page.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
+await page.goto("http://localhost:5183", { waitUntil: "networkidle" });
+await page.waitForTimeout(2200);
+await page.keyboard.press("Enter");
+await page.waitForFunction(() => document.body.dataset.state === "hero");
+await page.waitForTimeout(800);
+await page.locator(".eyebrow-btn").click();
+await page.waitForFunction(() => document.body.dataset.state === "operator");
+await page.waitForTimeout(1600);
+await page.screenshot({ path: ".previews/operator-top.png" });
+await page.locator("[data-op-scroll]").evaluate((el) => (el.scrollTop = el.scrollHeight * 0.35));
+await page.waitForTimeout(900);
+await page.screenshot({ path: ".previews/operator-wall.png" });
+// hub rail check
+await page.keyboard.press("Escape");
+await page.waitForFunction(() => document.body.dataset.state === "hub");
+await page.waitForTimeout(1400);
+await page.screenshot({ path: ".previews/operator-hub.png" });
+// mobile
+const m = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+await m.goto("http://localhost:5183", { waitUntil: "networkidle" });
+await m.waitForTimeout(2500);
+await m.keyboard.press("Enter");
+await m.waitForTimeout(1200);
+await m.locator(".eyebrow-btn").tap().catch(() => {});
+await m.waitForTimeout(1500);
+await m.screenshot({ path: ".previews/operator-mobile.png" });
+console.log("saved operator captures");
+await browser.close();

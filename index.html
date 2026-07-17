@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#06070A" />
+    <title>NOKIADEMON · a cipher-instrument portfolio</title>
+    <meta name="description" content="NOKIADEMON is an operable cipher-instrument. Rotate a ring, align a glyph, decode the work: Orion Terminal, EKKO, Joust, Black Widow, Finders x Keepers, Dead Internet Archive — plus the operator file." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="NOKIADEMON" />
+    <meta property="og:description" content="An astrolabe you operate, not a page you read. Six running processes orbiting a chrome core." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Martian+Mono:wght@300;400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body data-state="loading">
+    <a class="skip-link" href="#projects-index">Skip to project index</a>
+
+    <!-- Unicorn Studio ambient background (behind the instrument) -->
+    <div id="unicorn-bg" aria-hidden="true"></div>
+    <!-- WebGL instrument: ambient field + chrome astrolabe + rings + warp. Decorative. -->
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <div id="grain" aria-hidden="true"></div>
+    <div id="vignette" aria-hidden="true"></div>
+    <div id="fx-flash" data-flash aria-hidden="true"></div>
+
+    <!-- 2.1 LOADER ------------------------------------------------------------->
+    <section id="loader" class="scene" aria-label="Boot sequence">
+      <div class="loader-inner">
+        <p class="loader-title mono-line">nokiademon // cold boot</p>
+        <ul class="loader-feed" data-feed aria-live="polite"></ul>
+      </div>
+    </section>
+
+    <!-- 2.2 HERO --------------------------------------------------------------->
+    <header id="hero" class="scene" hidden>
+      <div class="hero-meta-wrap">
+        <nav class="hero-meta" aria-label="Categories" data-reveal>
+          <span><b>02</b> Apps</span>
+          <span><b>02</b> Tools</span>
+          <span><b>02</b> Sites</span>
+          <span><b>01</b> Operator</span>
+        </nav>
+      </div>
+
+      <div class="hero-inner">
+        <button class="eyebrow eyebrow-btn" type="button" data-goto="operator" data-reveal>OPERATOR // CHAKRA3301 <span aria-hidden="true">↗</span></button>
+        <h1 class="hero-handle" aria-label="NOKIADEMON">
+          <span class="hero-part hero-part--nokia">NOKIA </span><span class="hero-demon-wrap"><span class="hero-part hero-part--demon"><span class="hero-demon-prime" aria-hidden="true">&#8203;</span>DEMON</span></span>
+        </h1>
+        <p class="hero-tagline" data-reveal>
+          Designer and engineer of intelligent systems. Six running processes, one instrument.
+        </p>
+      </div>
+
+      <div class="hero-social-wrap">
+        <ul class="hero-social" data-reveal>
+          <li><a href="https://github.com/chakra3301" rel="noopener">github</a></li>
+          <li><a href="#" data-social="x" rel="noopener">x</a></li>
+          <li><a href="#" data-social="linkedin" rel="noopener">linkedin</a></li>
+          <li><a href="#" data-social="email">email</a></li>
+        </ul>
+      </div>
+
+      <div class="scroll-prompt-wrap">
+        <button class="scroll-prompt" type="button" data-goto="hub" data-reveal aria-label="Enter the instrument">
+          <span class="scroll-prompt-label">enter the instrument</span>
+          <span class="scroll-prompt-arrow" aria-hidden="true">▼</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2.3 ASTROLABE HUB ------------------------------------------------------>
+    <section id="hub" class="scene" hidden aria-label="Astrolabe">
+      <!-- Fixed reticle the active ring's glyph seats into. -->
+      <div class="reticle" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <circle cx="50" cy="50" r="30" class="reticle-ring" />
+          <path d="M50 6 L50 22 M50 78 L50 94 M6 50 L22 50 M78 50 L94 50" class="reticle-tick" />
+          <circle cx="50" cy="50" r="3" class="reticle-dot" />
+        </svg>
+      </div>
+
+      <!-- Live readout of the currently armed ring / glyph. -->
+      <div class="hub-readout" aria-hidden="true">
+        <span class="hub-readout-k">RING</span>
+        <span class="hub-readout-v" data-ring-name>IDLE</span>
+        <span class="hub-readout-k">GLYPH</span>
+        <span class="hub-readout-v" data-glyph-name>NONE ALIGNED</span>
+      </div>
+
+      <!-- Accessible + touch control surface: the ring rail.
+           Doubles as keyboard/screen-reader navigation and mobile ring selector. -->
+      <nav id="projects-index" class="ring-rail" aria-label="Projects">
+        <div class="ring-group" data-ring="A">
+          <p class="ring-group-label">Ring A · Apps</p>
+          <button class="mark-btn" data-project="orion">Orion Terminal</button>
+          <button class="mark-btn" data-project="ekko">EKKO</button>
+        </div>
+        <div class="ring-group" data-ring="B">
+          <p class="ring-group-label">Ring B · Tools</p>
+          <button class="mark-btn" data-project="joust">Joust</button>
+          <button class="mark-btn" data-project="widow">Black Widow</button>
+        </div>
+        <div class="ring-group" data-ring="C">
+          <p class="ring-group-label">Ring C · Sites</p>
+          <button class="mark-btn" data-project="finders">Finders x Keepers</button>
+          <button class="mark-btn" data-project="dia">Dead Internet Archive</button>
+        </div>
+        <p class="hub-hint" aria-hidden="true">select a process · drag a ring to dial one in · scroll down for the operator</p>
+      </nav>
+
+    </section>
+
+    <!-- 2.4 OPERATOR FILE — about the human running the processes -------------->
+    <section id="operator" class="scene scene--operator" hidden aria-label="About the operator">
+      <canvas class="op-field" data-op-field aria-hidden="true"></canvas>
+      <div class="op-vf" data-op-vf aria-hidden="true"></div>
+      <header class="op-header">
+        <p class="op-kicker" data-op-reveal><span class="dot"></span> ROOT // OPERATOR FILE</p>
+        <h2 class="op-name" data-op-reveal>CHAKRA<span class="op-name-dim">3301</span></h2>
+        <p class="op-bio-mini" data-op-reveal>
+          Designer &amp; engineer. Six processes on the dial are the software half — the
+          other half lives on fabric and paper: <b>STARSYSTEM 444</b>, <b>ARK 3301</b>,
+          screen runs pulled by hand in Tokyo. Built end-to-end by one person.
+        </p>
+        <p class="op-readout" data-op-reveal>ALIAS: CHAKRA3301 · FIELD: SYSTEMS / GRAPHICS / PRINT · STATUS: RUNNING</p>
+      </header>
+
+      <p class="op-field-hint" data-op-reveal aria-hidden="true">sweep to decode · click to open a file</p>
+      <p class="op-vf-credit" aria-hidden="true">force-field engine: <a href="https://github.com/gnovotny/nothing-to-watch" target="_blank" rel="noopener">voroforce</a> by gnovotny · CC&nbsp;BY-NC-SA&nbsp;3.0</p>
+
+      <div class="op-scroll" data-op-scroll>
+        <div class="op-wall" data-op-wall role="list" aria-label="Selected work — hover or focus a tile to decode it, click to enlarge">
+          <button class="op-cell" role="listitem" type="button" data-full="/about/crown.webp" data-cap="FILE 00 · THE OPERATOR — K-TOWN, AFTER HOURS" data-index="00" data-title="The Operator" data-meta="K-Town · after hours" data-tags="Portrait,Night" data-blurb="Shot under a K-Town sign past 3AM — gold crown, a cigarette and the STARSYSTEM 444 chain. The operator off the clock.">
+            <img src="/about/crown.webp" alt="The operator at night under a K-Town sign, wearing a gold crown with a cigarette" width="900" height="1256" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 00 · THE OPERATOR — K-TOWN, AFTER HOURS</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/print-shop.webp" data-cap="FILE 01 · PULLING SCREENS — TOKYO" data-index="01" data-title="Pulling Screens" data-meta="Tokyo · 2025" data-tags="Screenprint,Process" data-blurb="A STARSYSTEM 444 hood pulled by hand in a back-street Tokyo print shop. One squeegee pass, one colour, no shortcuts.">
+            <img src="/about/print-shop.webp" alt="Screen-printing a STARSYSTEM 444 hoodie by hand in a Tokyo print shop" width="900" height="1371" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 01 · PULLING SCREENS — TOKYO</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/toyoko-kids.webp" data-cap="FILE 02 · TOYOKO KIDS · STARSYSTEM 444" data-index="02" data-title="Toyoko Kids" data-meta="STARSYSTEM 444" data-tags="Tee,Graphic" data-blurb="Magenta sparkle and anime linework on charcoal — the Toyoko Kids drop for STARSYSTEM 444.">
+            <img src="/about/toyoko-kids.webp" alt="TOYOKO KIDS tee promo — magenta sparkles and anime linework on charcoal" width="1000" height="1333" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 02 · TOYOKO KIDS · STARSYSTEM 444</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/not-god.webp" data-cap="FILE 03 · YOU ARE NOT GOD · PRINT" data-index="03" data-title="You Are Not God" data-meta="Print · edition" data-tags="Blackwork,Print" data-blurb="Mirrored tigers, angels and rosaries in heavy blackwork. Hand-separated, screen-printed edition.">
+            <img src="/about/not-god.webp" alt="YOU ARE NOT GOD print — mirrored tigers, angels and rosaries in black and white" width="820" height="1093" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 03 · YOU ARE NOT GOD · PRINT</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/arcade.webp" data-cap="FILE 04 · FIELD TEST — TOKYO ARCADE" data-index="04" data-title="Field Test" data-meta="Tokyo arcade · night" data-tags="Lookbook,Night" data-blurb="The crew wearing the pieces in a Tokyo arcade after midnight. Clothes are made to be worn out, not shelved.">
+            <img src="/about/arcade.webp" alt="Crew wearing the pieces in a Tokyo arcade at night" width="1000" height="662" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 04 · FIELD TEST — TOKYO ARCADE</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/tokyo-angels.webp" data-cap="FILE 05 · TOKYO ANGELS · STARSYSTEM 444" data-index="05" data-title="Tokyo Angels" data-meta="STARSYSTEM 444" data-tags="Tee,Graphic" data-blurb="Blue angel artwork — all girls are angels in Tokyo. STARSYSTEM 444 promo run.">
+            <img src="/about/tokyo-angels.webp" alt="TOKYO ANGELS tee promo — blue angel artwork, all girls are angels in Tokyo" width="1000" height="1333" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 05 · TOKYO ANGELS · STARSYSTEM 444</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/seen-this-angel.webp" data-cap="FILE 06 · SEEN THIS ANGEL? · PRINT" data-index="06" data-title="Seen This Angel?" data-meta="Print · edition" data-tags="Blackwork,Print" data-blurb="A winged skull and dark angels in dense blackwork — a missing-poster for something that was never alive.">
+            <img src="/about/seen-this-angel.webp" alt="Seen this Angel? print — winged skull and dark angels in heavy blackwork" width="820" height="1093" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 06 · SEEN THIS ANGEL? · PRINT</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/ots-ark.webp" data-cap="FILE 07 · OTS × ARK · 2025" data-index="07" data-title="OTS × ARK" data-meta="Collab · 2025" data-tags="Collab,Embroidery" data-blurb="An embroidered jacket next to a secret-rare card — the OTS × ARK 3301 collaboration, 2025.">
+            <img src="/about/ots-ark.webp" alt="OTS x ARK 2025 collab — polaroid of embroidered jacket next to a secret rare card" width="664" height="776" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 07 · OTS × ARK · 2025</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/ark-tokyo.webp" data-cap="FILE 08 · ARK 3301 — TOKYO" data-index="08" data-title="ARK 3301" data-meta="Tokyo · print" data-tags="Blackwork,Collage" data-blurb="Iron cross over kabbalah diagrams and an angel collage. The ARK 3301 mainline print, Tokyo.">
+            <img src="/about/ark-tokyo.webp" alt="ARK 3301 Tokyo print — iron cross over kabbalah diagrams and angel collage" width="820" height="1093" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 08 · ARK 3301 — TOKYO</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/bats.webp" data-cap="FILE 09 · BATS · PRINT" data-index="09" data-title="Bats" data-meta="Print · edition" data-tags="Blackwork,Print" data-blurb="A swarm of bats over a gothic cathedral and inked figures. Fine-line blackwork, printed edition.">
+            <img src="/about/bats.webp" alt="Bats print — swarm of bats over a gothic cathedral and inked figures" width="720" height="960" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 09 · BATS · PRINT</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/lost-angels.webp" data-cap="FILE 10 · LOST ANGELS · DEAD INTERNET ARCHIVE" data-index="10" data-title="Lost Angels" data-meta="Dead Internet Archive" data-tags="Cover,3D" data-blurb="A winged chrome angel over a dead-net starfield, LOS ANG graffiti burning through. The LOST ANGELS key art for Dead Internet Archive.">
+            <img src="/about/lost-angels.webp" alt="LOST ANGELS cover — a winged chrome angel over a cosmic dead-internet starfield" width="1000" height="1000" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 10 · LOST ANGELS · DEAD INTERNET ARCHIVE</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/dia-b.webp" data-cap="FILE 11 · YOU ARE ALONE · DEAD INTERNET ARCHIVE" data-index="11" data-title="You Are Alone" data-meta="Dead Internet Archive" data-tags="Poster,Duotone" data-blurb="A cobalt duotone grin, half-machine — &quot;you are alone, nobody else is here.&quot; A Dead Internet Archive poster.">
+            <img src="/about/dia-b.webp" alt="YOU ARE ALONE poster — a cobalt duotone half-machine grinning face for Dead Internet Archive" width="1000" height="1000" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 11 · YOU ARE ALONE · DEAD INTERNET ARCHIVE</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/dia-dodge.webp" data-cap="FILE 12 · HALO · DEAD INTERNET ARCHIVE" data-index="12" data-title="Halo" data-meta="Dead Internet Archive" data-tags="Illustration,Pop" data-blurb="A haloed angel-kid in a monochrome jacket over rainbow static and stars — the DIA colour-dodge cover.">
+            <img src="/about/dia-dodge.webp" alt="HALO illustration — a haloed anime angel in a monochrome jacket over rainbow pop-art static" width="1000" height="1000" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 12 · HALO · DEAD INTERNET ARCHIVE</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/face.webp" data-cap="FILE 13 · THE FEED · DEAD INTERNET ARCHIVE" data-index="13" data-title="The Feed" data-meta="Dead Internet Archive" data-tags="Key Art,Print" data-blurb="A laughing mouth ringed with a thousand tiny faces — the psychedelic DEAD INTERNET ARCHIVE key art.">
+            <img src="/about/face.webp" alt="THE FEED key art — a laughing mouth ringed by hundreds of tiny faces, psychedelic Dead Internet Archive poster" width="1000" height="1000" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 13 · THE FEED · DEAD INTERNET ARCHIVE</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/relic.webp" data-cap="FILE 14 · CERTIFIED · FOUND RELIC" data-index="14" data-title="Certified" data-meta="Found · relic" data-tags="Meme,Relic" data-blurb="A cat in shades with a cigarette and a gold chain, ripped straight from a dead marketplace listing. Peak dead-internet.">
+            <img src="/about/relic.webp" alt="CERTIFIED relic — a white cat wearing sunglasses with a cigarette and a gold chain, from an old marketplace listing" width="402" height="402" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 14 · CERTIFIED · FOUND RELIC</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/leg.webp" data-cap="FILE 15 · ANYA-003 · ARK GENESIS" data-index="15" data-title="ANYA-003" data-meta="ARK GENESIS · ORION" data-tags="Card,Holo" data-blurb="ANYA-003 — a holographic knight card from the ARK GENESIS / ORION set, sealed in a toploader.">
+            <img src="/about/leg.webp" alt="ANYA-003 — a holographic anime knight trading card from the ARK GENESIS ORION set in a toploader" width="686" height="1000" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 15 · ANYA-003 · ARK GENESIS</span>
+          </button>
+          <button class="op-cell" role="listitem" type="button" data-full="/about/pink-poster.webp" data-cap="FILE 16 · EKKO · A PLACE FOR ART TO FIND ITS PEOPLE" data-index="16" data-title="EKKO" data-meta="A place for art to find its people" data-tags="Poster,Web" data-blurb="&quot;A platform for creative professionals.&quot; The EKKO / Dead Internet Archive launch poster in magenta glitch.">
+            <img src="/about/pink-poster.webp" alt="EKKO launch poster — magenta glitch, 'a place for art to find its people', Dead Internet Archive" width="1000" height="1000" loading="lazy" decoding="async" />
+            <span class="op-cell-cap" aria-hidden="true">FILE 16 · EKKO · A PLACE FOR ART TO FIND ITS PEOPLE</span>
+          </button>
+        </div>
+      </div>
+      <button class="daemon-back op-back" type="button" data-goto="hub">
+        <span aria-hidden="true">‹</span> back into the instrument
+      </button>
+
+      <!-- hover card — metadata for the tile under the cursor (side panel) -->
+      <aside class="op-hovercard" data-op-hovercard aria-hidden="true">
+        <img class="op-hc-bg" alt="" data-op-hc-bg decoding="async" aria-hidden="true" />
+        <div class="op-hc-scrim" aria-hidden="true"></div>
+        <div class="op-hc-body">
+          <span class="op-hc-index" data-op-hc-index></span>
+          <h3 class="op-hc-title" data-op-hc-title></h3>
+          <p class="op-hc-meta" data-op-hc-meta></p>
+          <ul class="op-hc-tags" data-op-hc-tags></ul>
+          <p class="op-hc-blurb" data-op-hc-blurb></p>
+          <p class="op-hc-cta">click to open the file</p>
+        </div>
+      </aside>
+
+      <!-- file preview — full detail card, opened from a decoded tile -->
+      <div class="op-lightbox" data-op-lightbox hidden role="dialog" aria-modal="true" aria-labelledby="op-lb-title">
+        <div class="op-lightbox-scrim" data-op-lightbox-close></div>
+        <article class="op-detail">
+          <img class="op-detail-bg" alt="" data-op-lightbox-img decoding="async" aria-hidden="true" />
+          <div class="op-detail-scrim" aria-hidden="true"></div>
+          <div class="op-detail-body">
+            <div class="op-detail-head">
+              <h3 class="op-detail-title" id="op-lb-title" data-op-lightbox-title></h3>
+              <span class="op-detail-index" data-op-lightbox-index aria-hidden="true"></span>
+            </div>
+            <p class="op-detail-meta" data-op-lightbox-meta></p>
+            <ul class="op-detail-tags" data-op-lightbox-tags></ul>
+            <p class="op-detail-blurb" data-op-lightbox-cap></p>
+            <div class="op-detail-actions">
+              <button class="op-detail-btn is-primary" type="button" data-op-lightbox-close>
+                close <span aria-hidden="true">✕</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2.5 DAEMON-STACK (populated per project) ------------------------------->
+    <section id="daemon" class="scene" hidden aria-label="Process detail">
+      <div class="daemon-stage">
+        <div class="daemon-card" data-daemon-card>
+          <div class="daemon-card-glare" aria-hidden="true"></div>
+          <div class="daemon-card-shell">
+            <canvas class="daemon-card-glass" data-daemon-glass aria-hidden="true"></canvas>
+            <div class="daemon-card-frame" aria-hidden="true">
+              <span class="daemon-card-screw daemon-card-screw--tl"></span>
+              <span class="daemon-card-screw daemon-card-screw--tr"></span>
+              <span class="daemon-card-screw daemon-card-screw--bl"></span>
+              <span class="daemon-card-screw daemon-card-screw--br"></span>
+              <span class="daemon-card-notch"></span>
+            </div>
+            <nav class="daemon-dots" data-daemon-dots aria-label="Process sections"></nav>
+            <div class="daemon-card-viewport" data-daemon-viewport></div>
+            <p class="daemon-scroll-hint" data-daemon-scroll-hint aria-hidden="true">
+              <span class="daemon-scroll-hint__label">Scroll</span>
+              <span class="daemon-scroll-hint__chev" aria-hidden="true">↓</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <button class="daemon-back" type="button" data-goto="hub">
+        <span aria-hidden="true">‹</span> back out of process
+      </button>
+    </section>
+
+    <div id="status" class="sr-only" aria-live="polite"></div>
+
+    <noscript>
+      <div class="noscript">
+        <h1>NOKIADEMON</h1>
+        <p>This portfolio is an interactive WebGL instrument and needs JavaScript.
+        Projects: Orion Terminal, EKKO, Joust, Black Widow, Finders x Keepers, Dead Internet Archive.
+        Reach out via <a href="https://github.com/chakra3301">github.com/chakra3301</a>.</p>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

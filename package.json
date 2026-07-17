@@ -1,0 +1,29 @@
+{
+  "name": "nokiademon",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "shoot": "node tools/screenshot.mjs http://localhost:5173 --full"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "ogl": "^1.0.11",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.4.1",
+    "@gltf-transform/extensions": "^4.4.1",
+    "@gltf-transform/functions": "^4.4.1",
+    "@rollup/pluginutils": "^5.4.0",
+    "esbuild": "^0.28.1",
+    "meshoptimizer": "^1.2.0",
+    "playwright": "^1.48.0",
+    "sharp": "^0.35.3",
+    "vite": "^5.4.0",
+    "vite-plugin-glsl": "^1.6.0"
+  }
+}

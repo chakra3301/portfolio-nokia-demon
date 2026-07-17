@@ -1,0 +1,24 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+page.on("pageerror", (e) => console.log("PAGEERROR:", e.message));
+await page.goto("http://localhost:5183", { waitUntil: "networkidle" });
+await page.waitForTimeout(2200);
+await page.keyboard.press("Enter");
+await page.waitForFunction(() => document.body.dataset.state === "hero");
+await page.waitForTimeout(600);
+await page.screenshot({ path: ".previews/final-hero.png" });
+await page.locator(".scroll-prompt").click();
+await page.waitForTimeout(1800);
+await page.screenshot({ path: ".previews/final-hub.png" });
+// mobile hub
+const m = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+await m.goto("http://localhost:5183", { waitUntil: "networkidle" });
+await m.waitForTimeout(2500);
+await m.keyboard.press("Enter");
+await m.waitForTimeout(1200);
+await m.tap(".scroll-prompt").catch(() => {});
+await m.waitForTimeout(1600);
+await m.screenshot({ path: ".previews/final-hub-mobile.png" });
+console.log("saved hero/hub/mobile");
+await browser.close();
