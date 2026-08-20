@@ -392,10 +392,15 @@ body.hdri-on #bg { mix-blend-mode: normal; }
 .mark-btn[data-armed="true"] { color: var(--white-hot); }
 .mark-btn[data-armed="true"]::before { background: var(--white-hot); }
 
-/* one-line operating hint under the rail */
+/* operating hint — fixed to the very top-right, clear of the project rail */
 .hub-hint {
-  margin: 0.4rem 0 0; font-size: 0.6rem; letter-spacing: var(--track-label);
-  text-transform: uppercase; color: var(--muted); opacity: 0.75; text-align: right;
+  position: fixed; z-index: 5;
+  top: calc(clamp(0.75rem, 2vh, 1.25rem) + env(safe-area-inset-top, 0px));
+  right: clamp(1.25rem, 4vw, 3.5rem);
+  max-width: calc(100vw - 2.5rem); margin: 0;
+  font-size: 0.6rem; line-height: 1.5; letter-spacing: var(--track-label);
+  text-transform: uppercase; color: var(--muted); opacity: 0.75;
+  text-align: right; white-space: nowrap; pointer-events: none;
 }
 
 /* grabbing a ring */
@@ -1105,6 +1110,7 @@ body[data-state="hub"] .ring-rail, body[data-state="hub"] .hub-readout { cursor:
 .doc-mode .daemon-card-glare { display: none; }
 .doc-mode .daemon-card-frame { display: none; }
 .doc-mode .ring-rail { text-align: left; grid-auto-flow: row; margin-top: 1.5rem; max-width: 40rem; }
+.doc-mode .hub-hint { position: relative; inset: auto; max-width: 40rem; margin: 1rem 0 0; text-align: left; white-space: normal; }
 .doc-mode .ring-group { border-right: 0; border-left: 1px solid var(--edge); padding: 0 0 0 0.9rem; }
 .doc-mode .mark-btn { text-align: left; }
 .doc-mode .mark-btn::before { left: -0.95rem; right: auto; }
@@ -1132,13 +1138,16 @@ body[data-state="hub"] .ring-rail, body[data-state="hub"] .hub-readout { cursor:
   .ring-group-label { font-size: 0.5rem; letter-spacing: 0.12em; }
   .mark-btn { text-align: center; font-size: 0.66rem; padding: 0.3rem 0; }
   .mark-btn::before { display: none; }
-  .hub-hint { grid-column: 1 / -1; text-align: center; margin-top: 0.55rem; font-size: 0.55rem; }
+  .hub-hint {
+    top: calc(0.75rem + env(safe-area-inset-top, 0px)); right: 0.75rem;
+    max-width: 60vw; font-size: 0.48rem; line-height: 1.6; white-space: normal;
+  }
   .reticle { top: 28%; width: 84px; height: 84px; }
   :root { --hero-edge-inset: clamp(0.65rem, 2vw, 1rem); }
   .hero-meta-wrap { top: clamp(0.85rem, 3vw, 1.6rem); }
   .hero-social-wrap { bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
   .scroll-prompt { font-size: 0.68rem; }
-  .hub-readout { bottom: auto; top: clamp(1rem, 4vw, 1.6rem); grid-template-columns: auto 1fr; font-size: 0.66rem; }
+  .hub-readout { bottom: auto; top: calc(4.25rem + env(safe-area-inset-top, 0px)); grid-template-columns: auto 1fr; font-size: 0.66rem; }
   .daemon-stage { padding-left: 0; justify-content: center; }
   .daemon-card { width: min(calc(100vw - 1.5rem), 36rem); min-height: min(18rem, 48vh); max-height: min(20rem, 52vh); }
   .daemon-panel { max-width: 100%; }
