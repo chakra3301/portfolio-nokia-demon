@@ -327,6 +327,7 @@ export function initOperatorWall({ reduced = false } = {}) {
   // no field (no WebGL2 / reduced-motion / narrow): header flows above the grid
   if (!field) {
     section && section.classList.add("no-field");
+    wall.classList.remove("is-superseded");
     return { isLightboxOpen: () => lb && !lb.hidden, enter() {}, leave() {} };
   }
 
@@ -341,15 +342,34 @@ export function initOperatorWall({ reduced = false } = {}) {
   const setField = (on) => {
     if (on === fieldOn) return;
     fieldOn = on;
-    window.__archiveActive = on;
+    window.__archiveActive = on && !document.hidden;
     activeFieldEl.classList.toggle("is-active", on);
     section.classList.toggle("field-live", on && usingVoro);
-    wall.classList.toggle("is-superseded", on);
-    if (on) field.activate();
-    else { field.deactivate(); section.classList.remove("kbd-grid"); showHoverCard(-1); }
+    // This wall is only an accessibility/WebGL fallback. Never reveal it during
+    // a normal field pause or the operator → hub fade from the live experience.
+    wall.classList.add("is-superseded");
+    if (on && !document.hidden) field.activate();
+    else {
+      if (field.selected) field.deselect();
+      field.deactivate();
+      section.classList.remove("kbd-grid");
+      showHoverCard(-1);
+    }
   };
-  // release the field if the tab is hidden
-  document.addEventListener("visibilitychange", () => { if (document.hidden) setField(false); });
+  // Tab changes pause GPU work without taking the logical operator route down.
+  // Re-activate on return; using setField(false) here exposed the obsolete grid.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      window.__archiveActive = false;
+      if (field.selected) field.deselect();
+      field.deactivate();
+      section.classList.remove("kbd-grid");
+      showHoverCard(-1);
+    } else if (fieldOn) {
+      field.activate();
+      window.__archiveActive = true;
+    }
+  });
   // keyboard users: focusing a grid tile reveals the accessible grid over the field
   wall.addEventListener("focusin", () => { if (fieldOn) section.classList.add("kbd-grid"); });
   wall.addEventListener("focusout", () => {
