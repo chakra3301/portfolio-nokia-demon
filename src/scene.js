@@ -410,9 +410,10 @@ export function createInstrument(canvas, { reduced = false } = {}) {
   video.src = "/loader.mp4";
   video.muted = true; video.defaultMuted = true; video.loop = false; video.playsInline = true;
   video.preload = "auto"; video.setAttribute("muted", ""); video.setAttribute("playsinline", "");
+  video.setAttribute("aria-hidden", "true");
   // keep in DOM but offscreen so mobile browsers keep decoding it
   video.style.cssText = "position:fixed;left:-8px;top:-8px;width:2px;height:2px;opacity:0.001;pointer-events:none;";
-  document.body.appendChild(video);
+  (document.querySelector("main") || document.body).appendChild(video);
   const videoTex = new THREE.VideoTexture(video);
   videoTex.colorSpace = THREE.SRGBColorSpace;
   videoTex.minFilter = THREE.LinearFilter; videoTex.magFilter = THREE.LinearFilter;

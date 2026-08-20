@@ -85,6 +85,9 @@ export function initOperatorWall({ reduced = false } = {}) {
   if (!wall) return;
   const cells = Array.from(wall.querySelectorAll(".op-cell"));
   if (!cells.length) return;
+  // Buttons retain their native semantics; the labelled container supplies the
+  // collection context without overriding button roles with invalid listitems.
+  cells.forEach((cell) => cell.removeAttribute("role"));
 
   // ── dither every tile once its image is ready ──────────────────────────────
   cells.forEach((cell) => {

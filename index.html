@@ -6,17 +6,13 @@
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#06070A" />
     <title>NOKIADEMON · a cipher-instrument portfolio</title>
-    <meta name="description" content="NOKIADEMON is an operable cipher-instrument. Rotate a ring, align a glyph, decode the work: Orion Terminal, EKKO, Joust, Black Widow, Finders x Keepers, Dead Internet Archive — plus the operator file." />
+    <meta name="description" content="NOKIADEMON is an operable cipher-instrument. Rotate a ring, align a glyph, decode the work: Orion Terminal, EKKO, Joust, Black Widow, Finders x Keepers, life.exe, Dead Internet Archive — plus the operator file." />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="NOKIADEMON" />
-    <meta property="og:description" content="An astrolabe you operate, not a page you read. Six running processes orbiting a chrome core." />
+    <meta property="og:description" content="An astrolabe you operate, not a page you read. Seven running processes orbiting a chrome core." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Martian+Mono:wght@300;400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/src/styles.css" />
     <script>
       document.documentElement.classList.add("js");
@@ -25,6 +21,7 @@
   <body data-state="loading">
     <a class="skip-link" href="#projects-index">Skip to project index</a>
 
+    <main id="main">
     <!-- Unicorn Studio ambient background (behind the instrument) -->
     <div id="unicorn-bg" aria-hidden="true"></div>
     <!-- WebGL instrument: ambient field + chrome astrolabe + rings + warp. Decorative. -->
@@ -47,7 +44,7 @@
         <nav class="hero-meta" aria-label="Categories" data-reveal>
           <span><b>02</b> Apps</span>
           <span><b>02</b> Tools</span>
-          <span><b>02</b> Sites</span>
+          <span><b>03</b> Sites</span>
           <span><b>01</b> Operator</span>
         </nav>
       </div>
@@ -58,7 +55,7 @@
           <span class="hero-part hero-part--nokia">NOKIA </span><span class="hero-demon-wrap"><span class="hero-part hero-part--demon"><span class="hero-demon-prime" aria-hidden="true">&#8203;</span>DEMON</span></span>
         </h1>
         <p class="hero-tagline" data-reveal>
-          Designer and engineer of intelligent systems. Six running processes, one instrument.
+          Designer and engineer of intelligent systems. Seven running processes, one instrument.
         </p>
       </div>
 
@@ -114,6 +111,7 @@
         <div class="ring-group" data-ring="C">
           <p class="ring-group-label">Ring C · Sites</p>
           <button class="mark-btn" data-project="finders">Finders x Keepers</button>
+          <button class="mark-btn" data-project="life">life.exe</button>
           <button class="mark-btn" data-project="dia">Dead Internet Archive</button>
         </div>
         <p class="hub-hint" aria-hidden="true">select a process · drag a ring to dial one in · scroll down for the operator</p>
@@ -129,7 +127,7 @@
         <p class="op-kicker" data-op-reveal><span class="dot"></span> ROOT // OPERATOR FILE</p>
         <h2 class="op-name" data-op-reveal>CHAKRA<span class="op-name-dim">3301</span></h2>
         <p class="op-bio-mini" data-op-reveal>
-          Designer &amp; engineer. Six processes on the dial are the software half — the
+          Designer &amp; engineer. Seven processes on the dial are the software half — the
           other half lives on fabric and paper: <b>STARSYSTEM 444</b>, <b>ARK 3301</b>,
           screen runs pulled by hand in Tokyo. Built end-to-end by one person.
         </p>
@@ -137,10 +135,10 @@
       </header>
 
       <p class="op-field-hint" data-op-reveal aria-hidden="true">sweep to decode · click to open a file</p>
-      <p class="op-vf-credit" aria-hidden="true">force-field engine: <a href="https://github.com/gnovotny/nothing-to-watch" target="_blank" rel="noopener">voroforce</a> by gnovotny · CC&nbsp;BY-NC-SA&nbsp;3.0</p>
+      <p class="op-vf-credit">force-field engine: <a href="https://github.com/gnovotny/nothing-to-watch" target="_blank" rel="noopener">voroforce</a> by gnovotny · CC&nbsp;BY-NC-SA&nbsp;3.0</p>
 
       <div class="op-scroll" data-op-scroll>
-        <div class="op-wall" data-op-wall role="list" aria-label="Selected work — hover or focus a tile to decode it, click to enlarge">
+        <div class="op-wall" data-op-wall role="group" aria-label="Selected work — hover or focus a tile to decode it, click to enlarge">
           <button class="op-cell" role="listitem" type="button" data-full="/about/crown.webp" data-cap="FILE 00 · THE OPERATOR — K-TOWN, AFTER HOURS" data-index="00" data-title="The Operator" data-meta="K-Town · after hours" data-tags="Portrait,Night" data-blurb="Shot under a K-Town sign past 3AM — gold crown, a cigarette and the STARSYSTEM 444 chain. The operator off the clock.">
             <img src="/about/crown.webp" alt="The operator at night under a K-Town sign, wearing a gold crown with a cigarette" width="900" height="1256" loading="lazy" decoding="async" />
             <span class="op-cell-cap" aria-hidden="true">FILE 00 · THE OPERATOR — K-TOWN, AFTER HOURS</span>
@@ -280,6 +278,7 @@
         <span aria-hidden="true">‹</span> back out of process
       </button>
     </section>
+    </main>
 
     <div id="status" class="sr-only" aria-live="polite"></div>
 
@@ -287,7 +286,7 @@
       <div class="noscript">
         <h1>NOKIADEMON</h1>
         <p>This portfolio is an interactive WebGL instrument and needs JavaScript.
-        Projects: Orion Terminal, EKKO, Joust, Black Widow, Finders x Keepers, Dead Internet Archive.
+        Projects: Orion Terminal, EKKO, Joust, Black Widow, Finders x Keepers, life.exe, Dead Internet Archive.
         Reach out via <a href="https://github.com/chakra3301">github.com/chakra3301</a>.</p>
       </div>
     </noscript>

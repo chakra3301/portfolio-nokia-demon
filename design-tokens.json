@@ -13,14 +13,15 @@
       "joust":   "#FFB84D",
       "widow":   "#FF3B5C",
       "finders": "#E8C468",
+      "life":    "#4E8CFF",
       "selected": "#D8CFC0"
     }
   },
   "typography": {
     "family": {
-      "display": "'Martian Mono', 'IBM Plex Mono', ui-monospace, monospace",
+      "display": "'IBM Plex Mono', ui-monospace, monospace",
       "text": "'IBM Plex Mono', ui-monospace, monospace",
-      "glyph": "'Zen Kaku Gothic New', 'IBM Plex Mono', sans-serif"
+      "glyph": "'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'IBM Plex Mono', sans-serif"
     },
     "tracking": { "eyebrow": "0.28em", "label": "0.2em", "normal": "0" },
     "scale": {

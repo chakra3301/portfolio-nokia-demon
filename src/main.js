@@ -13,14 +13,6 @@
 import gsap from "gsap";
 import { createInstrument } from "./scene.js";
 import { mountUnicornBg } from "./unicorn-bg.js";
-import { createJoustFx } from "./joust-fx.js";
-import { createWidowFx } from "./widow-fx.js";
-import { createFindersFx } from "./finders-fx.js";
-import { createEkkoFx } from "./ekko-fx.js";
-import { createOrionFx } from "./orion-fx.js";
-import { createDiaFx } from "./dia-fx.js";
-import { createLiquidGlass } from "./liquid-glass.js";
-import { initOperatorWall } from "./operator-wall.js";
 import { PROJECTS, PROJECT_BY_ID, RINGS } from "./data.js";
 
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -39,23 +31,48 @@ const scenes = {
 };
 
 const instrument = createInstrument(canvas, { reduced });
-// one backdrop animation per daemon — all share the {canvas,start,stop,update} contract
-const fxRegistry = {
-  joust: createJoustFx({ reduced }),
-  widow: createWidowFx({ reduced }),
-  finders: createFindersFx({ reduced }),
-  ekko: createEkkoFx({ reduced, getOrigin: () => instrument.coreScreen() }),
-  orion: createOrionFx({ reduced }),
-  dia: createDiaFx({ reduced }),
+// Daemon backdrops are route-level features. Loading them during the cold boot
+// made every visitor parse seven effects (and construct hidden canvases) before
+// the loader title could paint. Fetch only the selected process during its warp.
+const fxRegistry = {};
+const fxPromises = {};
+const fxLoaders = {
+  joust: () => import("./joust-fx.js").then(({ createJoustFx }) => createJoustFx({ reduced })),
+  widow: () => import("./widow-fx.js").then(({ createWidowFx }) => createWidowFx({ reduced })),
+  finders: () => import("./finders-fx.js").then(({ createFindersFx }) => createFindersFx({ reduced })),
+  ekko: () => import("./ekko-fx.js").then(({ createEkkoFx }) => createEkkoFx({ reduced, getOrigin: () => instrument.coreScreen() })),
+  orion: () => import("./orion-fx.js").then(({ createOrionFx }) => createOrionFx({ reduced })),
+  dia: () => import("./dia-fx.js").then(({ createDiaFx }) => createDiaFx({ reduced })),
+  life: () => import("./life-fx.js").then(({ createLifeFx }) => createLifeFx({ reduced })),
 };
+function ensureFx(id) {
+  if (fxRegistry[id]) return Promise.resolve(fxRegistry[id]);
+  if (!fxLoaders[id]) return Promise.resolve(null);
+  if (!fxPromises[id]) {
+    fxPromises[id] = fxLoaders[id]()
+      .then((fx) => (fxRegistry[id] = fx))
+      .catch(() => null);
+  }
+  return fxPromises[id];
+}
 const activeFx = () => Object.values(fxRegistry).filter((fx) => fx.active);
 if (import.meta.env.DEV) { window.__fx = fxRegistry; window.__instrument = instrument; } // debug hooks (dev only)
 const daemonShell = () => document.querySelector(".daemon-card-shell");
-let liquidGlass = reduced ? null : createLiquidGlass({
-  shell: daemonShell(),
-  sourceCanvas: canvas,
-  reduced,
-});
+let liquidGlass = null;
+let liquidGlassPromise = null;
+function ensureLiquidGlass() {
+  if (reduced) return Promise.resolve(null);
+  if (liquidGlass) return Promise.resolve(liquidGlass);
+  if (!liquidGlassPromise) {
+    liquidGlassPromise = import("./liquid-glass.js")
+      .then(({ createLiquidGlass }) => {
+        liquidGlass = createLiquidGlass({ shell: daemonShell(), sourceCanvas: canvas, reduced });
+        return liquidGlass;
+      })
+      .catch(() => null);
+  }
+  return liquidGlassPromise;
+}
 let unicornBg = null;
 let state = "loader";
 let locked = null; // latch to prevent warp re-trigger
@@ -113,7 +130,7 @@ const BOOT_FEED = [
   [0.34, "allocating glyph field"],
   [0.52, "compositing dither grid"],
   [0.70, "seating chrome core"],
-  [0.86, "mounting 6 processes"],
+  [0.86, "mounting 7 processes"],
   [0.98, "ready"],
 ];
 
@@ -299,7 +316,20 @@ const ringNameEl = $("[data-ring-name]");
 const glyphNameEl = $("[data-glyph-name]");
 let descent = 0; // accumulates wheel when no ring armed → scroll back to hero
 let lastRotateAt = 0; // a lock may only fire shortly after the user rotates a ring
-let opWall = null; // operator archive controller (created at boot)
+let opWall = null;
+let opWallPromise = null;
+function ensureOperatorWall() {
+  if (opWall) return Promise.resolve(opWall);
+  if (!opWallPromise) {
+    opWallPromise = import("./operator-wall.js")
+      .then(({ initOperatorWall }) => {
+        opWall = initOperatorWall({ reduced });
+        return opWall;
+      })
+      .catch(() => null);
+  }
+  return opWallPromise;
+}
 
 function goHub() {
   opWall && opWall.leave();
@@ -369,7 +399,11 @@ function goOperator() {
   opAscent = 0;
   const opSection = document.getElementById("operator");
   if (opSection) opSection.scrollTop = 0;
-  opWall && opWall.enter();   // straight into the fullscreen voronoi archive
+  // The archive engine is a large, isolated route. Load it on demand and only
+  // activate it if the operator scene is still current when initialization ends.
+  ensureOperatorWall().then((wall) => {
+    if (wall && state === "operator") wall.enter();
+  });
   announce("Operator file, CHAKRA3301. A live archive field — sweep to decode a work, click to open it. Scroll up, escape, or back returns to the instrument.");
   if (!reduced) {
     gsap.fromTo("[data-op-reveal]",
@@ -398,6 +432,9 @@ function pickProject(project) {
 
 function enterProject(project) {
   if (state !== "hub") { showScene("hub", { fade: false }); setState("hub"); }
+  // Start route chunks while the 1.4s warp is playing; they are normally ready
+  // before the daemon appears and never compete with the initial LCP.
+  const effectsReady = Promise.all([ensureFx(project.id), ensureLiquidGlass()]);
   locked = project.id; // engage latch for every entry path (align / rail)
   setState("warp");
   reticleEl.classList.remove("armed");
@@ -406,15 +443,17 @@ function enterProject(project) {
   gsap.to(scenes.hub, { opacity: 0, duration: 0.3, onComplete: () => (scenes.hub.hidden = true) });
   instrument.warpTo(project, () => {
     buildDaemon(project);
-    const fx = fxRegistry[project.id];
-    if (fx) {
-      fx.start();
-      // orion renders a solid character; everything else stays additive dither
-      instrument.setDaemonFx(fx.canvas, 1, project.id === "orion" ? 1 : 0);
-    }
-    liquidGlass?.start();
     showScene("daemon");
     setState("daemon");
+    effectsReady.then(([fx, glass]) => {
+      if (state !== "daemon" || currentProject?.id !== project.id) return;
+      if (fx) {
+        fx.start();
+        // orion renders a solid character; everything else stays additive dither
+        instrument.setDaemonFx(fx.canvas, 1, project.id === "orion" ? 1 : 0);
+      }
+      glass?.start();
+    });
     announce(`${project.name}. ${project.thesis}`);
   });
 }
@@ -443,9 +482,9 @@ function buildDaemon(project) {
     `<div class="daemon-kicker"><span class="dot"></span> Readout</div>
      <div class="daemon-readout">${project.readout}</div>
      <div class="daemon-grid">
-       <div class="daemon-field"><h4>Stack</h4><div class="daemon-stack-list">${project.stack.map((s) => `<span>${s}</span>`).join("")}</div></div>
-       <div class="daemon-field"><h4>Role</h4><p>${project.role}</p></div>
-       <div class="daemon-field"><h4>Status</h4><p>${project.statusNote}</p></div>
+       <div class="daemon-field"><h3>Stack</h3><div class="daemon-stack-list">${project.stack.map((s) => `<span>${s}</span>`).join("")}</div></div>
+       <div class="daemon-field"><h3>Role</h3><p>${project.role}</p></div>
+       <div class="daemon-field"><h3>Status</h3><p>${project.statusNote}</p></div>
      </div>`,
     // 4 Action
     `<div class="daemon-kicker"><span class="dot"></span> Action</div>
@@ -551,21 +590,46 @@ let heroDescent = 0;
 let wheelAcc = 0;
 let lastWheelAt = 0;
 let wheelLockUntil = 0;
+let wheelBlockedUntil = 0;
 let opAscent = 0;
+const WHEEL_TRANSITION_LOCK_MS = 1100;
+const WHEEL_RELEASE_MS = 320;
+
+function holdWheelUntilRelease(now = performance.now()) {
+  // A trackpad fling keeps emitting inertial wheel events after the state has
+  // changed. Enforce a minimum transition cooldown, keep extending it while
+  // momentum arrives, then require a fresh gesture in the new scene.
+  wheelBlockedUntil = now + WHEEL_TRANSITION_LOCK_MS;
+  heroDescent = 0;
+  descent = 0;
+  wheelAcc = 0;
+  opAscent = 0;
+  lastWheelAt = now;
+}
 
 function onWheel(e) {
   if (reduced) return;
+  const now = performance.now();
+
+  if (now < wheelBlockedUntil) {
+    e.preventDefault();
+    wheelBlockedUntil = Math.max(wheelBlockedUntil, now + WHEEL_RELEASE_MS);
+    return;
+  }
+
   if (state === "operator") {
     // the archive field owns the screen; a deliberate scroll up climbs back to the
     // dial. (fallback with no field scrolls the section natively until its top.)
     const sc = window.__archiveActive ? null : document.getElementById("operator");
     const atTop = !sc || sc.scrollTop <= 0;
     if (atTop && e.deltaY < 0) {
-      const now = performance.now();
       if (now - lastWheelAt > 900) opAscent = 0;
       lastWheelAt = now;
       opAscent += e.deltaY;
-      if (opAscent < -180) { opAscent = 0; goHub(); }
+      if (opAscent < -180) {
+        holdWheelUntilRelease(now);
+        goHub();
+      }
     } else {
       opAscent = 0;
     }
@@ -573,12 +637,14 @@ function onWheel(e) {
   }
   e.preventDefault();
   const dy = e.deltaY;
-  const now = performance.now();
 
   if (state === "hero") {
     heroDescent = now - lastWheelAt > 500 ? dy : heroDescent + dy;
     lastWheelAt = now;
-    if (heroDescent > 110) { heroDescent = 0; goHub(); }
+    if (heroDescent > 110) {
+      holdWheelUntilRelease(now);
+      goHub();
+    }
     return;
   }
   if (state === "hub") {
@@ -587,8 +653,13 @@ function onWheel(e) {
     if (now - lastWheelAt > 900) descent = 0;
     lastWheelAt = now;
     descent += dy;
-    if (descent < -220) { descent = 0; goHero(); }
-    else if (descent > 220) { descent = 0; goOperator(); }
+    if (descent < -220) {
+      holdWheelUntilRelease(now);
+      goHero();
+    } else if (descent > 220) {
+      holdWheelUntilRelease(now);
+      goOperator();
+    }
     return;
   }
   if (state === "daemon") {
@@ -598,8 +669,8 @@ function onWheel(e) {
     wheelAcc += dy;
     if (Math.abs(wheelAcc) > 80) {
       const dir = wheelAcc > 0 ? 1 : -1;
-      wheelAcc = 0;
       wheelLockUntil = now + 600;
+      holdWheelUntilRelease(now);
       goDaemonPanel(daemonIndex + dir);
     }
   }
@@ -662,12 +733,20 @@ function onPointer(e) {
 // touch: horizontal drag rotates the armed ring; vertical swipe steps panels
 let touchY = null, touchX = null;
 let touchPanelLock = 0;
+let touchGestureConsumed = false;
 function onTouchStart(e) {
   touchY = e.touches[0].clientY;
   touchX = e.touches[0].clientX;
+  touchGestureConsumed = false;
 }
 function onTouchMove(e) {
   if (touchY == null) return;
+  if (touchGestureConsumed) {
+    // One swipe may change one deck/panel. Do not let the remainder of the same
+    // finger gesture scroll the scene that has just appeared underneath it.
+    e.preventDefault();
+    return;
+  }
   const y = e.touches[0].clientY;
   const x = e.touches[0].clientX;
   const dy = touchY - y;
@@ -681,15 +760,21 @@ function onTouchMove(e) {
     e.preventDefault();
   } else if (state === "hub" && Math.abs(dy) > Math.abs(dx) && dy > 90 && !instrument.aligning) {
     // swipe up on the dial → descend into the operator file
-    touchY = y; touchX = x;
+    touchGestureConsumed = true;
+    e.preventDefault();
     goOperator();
   } else if (state === "daemon" && Math.abs(dy) > 64 && performance.now() > touchPanelLock) {
     touchPanelLock = performance.now() + 600;
+    touchGestureConsumed = true;
+    e.preventDefault();
     goDaemonPanel(daemonIndex + (dy > 0 ? 1 : -1));
-    touchY = y; touchX = x;
   }
 }
-function onTouchEnd() { touchY = null; touchX = null; }
+function onTouchEnd() {
+  touchY = null;
+  touchX = null;
+  touchGestureConsumed = false;
+}
 
 // ── rail buttons + nav ────────────────────────────────────────────────────────
 function wireControls() {
@@ -739,9 +824,9 @@ function bootDocMode() {
       <p class="daemon-body">${p.description}</p>
       <div class="daemon-readout">${p.readout}</div>
       <div class="daemon-grid">
-        <div class="daemon-field"><h4>Stack</h4><div class="daemon-stack-list">${p.stack.map((s) => `<span>${s}</span>`).join("")}</div></div>
-        <div class="daemon-field"><h4>Role</h4><p>${p.role}</p></div>
-        <div class="daemon-field"><h4>Status</h4><p>${p.statusNote}</p></div>
+        <div class="daemon-field"><h3>Stack</h3><div class="daemon-stack-list">${p.stack.map((s) => `<span>${s}</span>`).join("")}</div></div>
+        <div class="daemon-field"><h3>Role</h3><p>${p.role}</p></div>
+        <div class="daemon-field"><h3>Status</h3><p>${p.statusNote}</p></div>
       </div>
       ${ctaMarkup(p)}
     </article>`).join("");
@@ -755,10 +840,12 @@ function bootDocMode() {
 requestAnimationFrame(tick);
 if (reduced) {
   bootDocMode();
+  // Document mode exposes the operator archive immediately; initialize its
+  // button semantics and static fallback after the critical document paint.
+  requestAnimationFrame(() => ensureOperatorWall());
 } else {
   wireControls();
   runLoader();
 }
-opWall = initOperatorWall({ reduced });
 
 if (import.meta.hot) import.meta.hot.dispose(() => { for (const fx of Object.values(fxRegistry)) { fx.stop(); fx.destroy?.(); } liquidGlass?.destroy(); unicornBg?.destroy?.(); instrument.dispose(); });

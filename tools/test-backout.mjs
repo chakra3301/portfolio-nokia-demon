@@ -22,7 +22,7 @@ await page.waitForTimeout(1800);
 console.log("after select:", await stateOf(), "(expect daemon)");
 
 // back out via the button
-await page.locator(".daemon-back").click();
+await page.locator(".daemon-back:not(.op-back)").click();
 await page.waitForTimeout(1600);
 const s1 = await stateOf();
 console.log("1.6s after back:", s1, "(expect hub)");

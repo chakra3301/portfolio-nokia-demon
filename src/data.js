@@ -27,16 +27,20 @@ export const PROJECTS = [
     name: "Orion Terminal",
     glyph: "オ",
     color: "#4DE8FF",
-    thesis: "A JARVIS-style workstation with Claude living inside every app.",
+    thesis: "Visual AI Harness and WorkStation",
     description:
       "One desktop shell fusing a terminal, an editor, and a research companion into a single surface, with a context-aware model embedded in each so the tools reason about what you are doing. Built native for speed and offline trust rather than another browser tab.",
     stack: ["Tauri 2", "React 19", "TypeScript", "Rust", "R3F", "xterm", "Monaco"],
     role: "Design, systems architecture, full build",
     status: "RUNNING",
-    statusNote: "beta v1 · private · macOS Apple Silicon",
+    statusNote: "beta v1 · open beta · macOS Apple Silicon",
     uptime: "14MO",
     coreShift: 5.0, // R.O.S.I.E owns the stage — core drifts to the frame edge
-    cta: { kind: "status", label: "Private beta, no public link" },
+    cta: {
+      kind: "external",
+      label: "Visit Open Beta",
+      href: "https://orion-terminal-delta.vercel.app/",
+    },
   },
   {
     id: "ekko",
@@ -109,6 +113,24 @@ export const PROJECTS = [
     cta: { kind: "external", label: "Visit Project", href: "https://findersxkeepers.com" },
   },
   {
+    id: "life",
+    ring: "C",
+    category: "Sites",
+    name: "life.exe",
+    glyph: "生",
+    color: "#4E8CFF",
+    thesis: "A research-compound storefront built around evidence, safety, and lot-level documentation.",
+    description:
+      "A privacy-first prototype storefront for research compounds. Each product pairs a molecular visualization with cited literature, evidence limits, safety boundaries, and lot-level documentation. Research-only restrictions stay visible throughout, and the product copy excludes dosing, administration, treatment, and diagnostic guidance.",
+    stack: ["Vite 8", "JavaScript", "Three.js", "GSAP", "WebGL", "Canvas"],
+    role: "Concept, product design, full build",
+    status: "PROTOTYPE",
+    statusNote: "prototype · deployment pending",
+    uptime: "1MO",
+    coreShift: 4.4, // fluid field + molecular pair own the open side of the stage
+    cta: { kind: "status", label: "Deployment pending" },
+  },
+  {
     id: "dia",
     ring: "C",
     category: "Sites",
@@ -139,7 +161,7 @@ export const PROJECT_BY_ID = Object.fromEntries(PROJECTS.map((p) => [p.id, p]));
 export const RINGS = {
   A: { id: "A", label: "APPS", radius: 3.1, projects: ["orion", "ekko"] },
   B: { id: "B", label: "TOOLS", radius: 4.35, projects: ["joust", "widow"] },
-  C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "dia"] },
+  C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "dia"] },
 };
 
 // Root-terminal contact block (brief §2.6). Placeholders flagged for the operator.
@@ -151,4 +173,4 @@ export const CONTACT = {
 
 // notes.txt — operator writes this directly (brief §7). Honest placeholder.
 export const NOTES =
-  "six processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";
+  "seven processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";

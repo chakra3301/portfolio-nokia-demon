@@ -8,6 +8,20 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-400.woff2") format("woff2");
+  font-weight: 300 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-600.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --bg: #06070a;
@@ -24,10 +38,10 @@
   --hero-stroke-black: 0.015em;
   --hero-stroke-purple: 0.009em;
 
-  --font-arches: "Arches", "Martian Mono", ui-monospace, monospace;
-  --font-display: "Martian Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --font-arches: "Arches", "IBM Plex Mono", ui-monospace, monospace;
+  --font-display: "IBM Plex Mono", ui-monospace, monospace;
   --font-text: "IBM Plex Mono", ui-monospace, monospace;
-  --font-glyph: "Zen Kaku Gothic New", "IBM Plex Mono", sans-serif;
+  --font-glyph: "Hiragino Kaku Gothic ProN", "Yu Gothic", "IBM Plex Mono", sans-serif;
 
   --track-eyebrow: 0.28em;
   --track-label: 0.2em;
@@ -1034,7 +1048,7 @@ body[data-state="hub"] .ring-rail, body[data-state="hub"] .hub-readout { cursor:
   background: color-mix(in srgb, var(--proj, #fff) 6%, transparent); overflow-wrap: anywhere;
 }
 .daemon-grid { display: grid; grid-template-columns: 1fr; gap: 0.85rem 1.25rem; width: 100%; }
-.daemon-field h4 { margin: 0 0 0.3rem; font-size: 0.62rem; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.daemon-field h3 { margin: 0 0 0.3rem; font-size: 0.62rem; letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); font-weight: 500; }
 .daemon-field p { margin: 0; color: var(--fg); font-size: 0.88rem; }
 .daemon-stack-list { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .daemon-stack-list span { font-size: 0.68rem; border: 1px solid var(--edge); padding: 0.18rem 0.5rem; color: var(--chrome-base); }
