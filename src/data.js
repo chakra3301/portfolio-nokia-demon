@@ -131,6 +131,24 @@ export const PROJECTS = [
     cta: { kind: "status", label: "Deployment pending" },
   },
   {
+    id: "bonkler",
+    ring: "C",
+    category: "Sites",
+    name: "Bonkler Battle",
+    glyph: "ボ",
+    color: "#00B8A9",
+    thesis: "Build a janky Bonkler, tune its loadout, and battle your way up the ranks.",
+    description:
+      "A retro browser fighting game built around the Bonklers NFT collection. Players can enter instantly with local demo fighters, connect a Solana wallet for collection units, swap seven layers of equipment, buy components, and run turn-based AI battles with persistent progression and a leaderboard system. The Windows 2000 shell stays responsive, keyboard-accessible, and reduced-motion safe.",
+    stack: ["JavaScript", "Canvas 2D", "Express", "PostgreSQL", "Solana", "Helius"],
+    role: "Game design, systems architecture, full build",
+    status: "LIVE",
+    statusNote: "live · build 1.8.1 · instant demo mode",
+    uptime: "1MO",
+    coreShift: 4.7,
+    cta: { kind: "external", label: "Play Bonkler Battle", href: "https://bonkler-game.vercel.app/" },
+  },
+  {
     id: "dia",
     ring: "C",
     category: "Sites",
@@ -161,7 +179,7 @@ export const PROJECT_BY_ID = Object.fromEntries(PROJECTS.map((p) => [p.id, p]));
 export const RINGS = {
   A: { id: "A", label: "APPS", radius: 3.1, projects: ["orion", "ekko"] },
   B: { id: "B", label: "TOOLS", radius: 4.35, projects: ["joust", "widow"] },
-  C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "dia"] },
+  C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "bonkler", "dia"] },
 };
 
 // Root-terminal contact block (brief §2.6). Placeholders flagged for the operator.
@@ -173,4 +191,4 @@ export const CONTACT = {
 
 // notes.txt — operator writes this directly (brief §7). Honest placeholder.
 export const NOTES =
-  "seven processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";
+  "eight processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";

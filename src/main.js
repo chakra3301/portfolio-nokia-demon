@@ -32,7 +32,7 @@ const scenes = {
 
 const instrument = createInstrument(canvas, { reduced });
 // Daemon backdrops are route-level features. Loading them during the cold boot
-// made every visitor parse seven effects (and construct hidden canvases) before
+// made every visitor parse every effect (and construct hidden canvases) before
 // the loader title could paint. Fetch only the selected process during its warp.
 const fxRegistry = {};
 const fxPromises = {};
@@ -44,6 +44,7 @@ const fxLoaders = {
   orion: () => import("./orion-fx.js").then(({ createOrionFx }) => createOrionFx({ reduced })),
   dia: () => import("./dia-fx.js").then(({ createDiaFx }) => createDiaFx({ reduced })),
   life: () => import("./life-fx.js").then(({ createLifeFx }) => createLifeFx({ reduced })),
+  bonkler: () => import("./bonkler-fx.js").then(({ createBonklerFx }) => createBonklerFx({ reduced })),
 };
 function ensureFx(id) {
   if (fxRegistry[id]) return Promise.resolve(fxRegistry[id]);
@@ -130,7 +131,7 @@ const BOOT_FEED = [
   [0.34, "allocating glyph field"],
   [0.52, "compositing dither grid"],
   [0.70, "seating chrome core"],
-  [0.86, "mounting 7 processes"],
+  [0.86, "mounting 8 processes"],
   [0.98, "ready"],
 ];
 
@@ -450,7 +451,7 @@ function enterProject(project) {
       if (fx) {
         fx.start();
         // orion renders a solid character; everything else stays additive dither
-        instrument.setDaemonFx(fx.canvas, 1, project.id === "orion" ? 1 : 0);
+        instrument.setDaemonFx(fx.canvas, 1, ["orion", "bonkler"].includes(project.id) ? 1 : 0);
       }
       glass?.start();
     });

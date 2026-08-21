@@ -36,7 +36,7 @@ for (const id of projects) {
     await page.screenshot({ path: `${outDir}/fx-${id}-${name}.png` });
     console.log("saved", id, name);
   }
-  await page.locator(".daemon-back").click();
+  await page.locator(".daemon-back:not(.op-back)").click();
   await page.waitForFunction(() => document.body.dataset.state === "hub", { timeout: 10000 });
   await page.waitForTimeout(900);
 }
