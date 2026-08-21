@@ -82,13 +82,18 @@ export function createDiaFx({ reduced = false } = {}) {
     }
   }
 
-  /** monitor placement: cover the whole background (like background-size: cover,
-   *  with a touch of overscan so the bezel edges bleed off-frame) */
+  /** Keep the complete CRT in frame instead of treating it as cover art.
+   *  Seat it behind the daemon on desktop; lift it above the card on mobile. */
   function monitorBox() {
-    const ar = screenRect.iw / screenRect.ih;
-    let mw = w * 1.04, mh = mw / ar;
-    if (mh < h * 1.04) { mh = h * 1.04; mw = mh * ar; }
-    return { x: (w - mw) / 2, y: (h - mh) / 2, w: mw, h: mh };
+    const desktop = w > 860;
+    const maxW = w * (desktop ? 0.56 : 0.84);
+    const maxH = h * (desktop ? 0.86 : 0.7);
+    const scale = Math.min(maxW / screenRect.iw, maxH / screenRect.ih);
+    const mw = screenRect.iw * scale;
+    const mh = screenRect.ih * scale;
+    const cx = desktop ? w * 0.66 : w * 0.5;
+    const cy = desktop ? h * 0.5 : h * 0.3;
+    return { x: cx - mw / 2, y: cy - mh / 2, w: mw, h: mh };
   }
 
   function drawStatic(sx, sy, sw, sh, intensity) {
