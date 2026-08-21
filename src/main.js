@@ -39,6 +39,7 @@ const fxPromises = {};
 const fxLoaders = {
   joust: () => import("./joust-fx.js").then(({ createJoustFx }) => createJoustFx({ reduced })),
   widow: () => import("./widow-fx.js").then(({ createWidowFx }) => createWidowFx({ reduced })),
+  forge: () => import("./forge-fx.js").then(({ createForgeFx }) => createForgeFx({ reduced })),
   finders: () => import("./finders-fx.js").then(({ createFindersFx }) => createFindersFx({ reduced })),
   ekko: () => import("./ekko-fx.js").then(({ createEkkoFx }) => createEkkoFx({ reduced, getOrigin: () => instrument.coreScreen() })),
   orion: () => import("./orion-fx.js").then(({ createOrionFx }) => createOrionFx({ reduced })),

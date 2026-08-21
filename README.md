@@ -1,7 +1,7 @@
 # NOKIADEMON
 
 An operable **cipher-instrument** portfolio. Not a page you read — a machine you
-operate. A chrome core sits at the center; eight projects orbit it as engraved
+operate. A chrome core sits at the center; nine projects orbit it as engraved
 glyph-marks on three concentric rings. You don't click a project, you **decode**
 it: rotate a ring until its glyph aligns under the reticle, it locks, and the
 mechanism warps you into that project's running process.

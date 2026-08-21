@@ -95,6 +95,24 @@ export const PROJECTS = [
     cta: { kind: "source", label: "View Source", href: "https://github.com/chakra3301" },
   },
   {
+    id: "forge",
+    ring: "B",
+    category: "Tools",
+    name: "Forge Studio",
+    glyph: "鍛",
+    color: "#9BCB4B",
+    thesis: "Build generative NFT collections from layered artwork, rarity weights, and compatibility rules.",
+    description:
+      "Import layered trait ZIPs, reorder the stack, set rarity and compatibility rules, preview combinations, generate a unique supply, and export images with metadata.",
+    stack: ["React 19", "Vite", "Canvas 2D", "JSZip"],
+    role: "Product design, full build",
+    status: "LIVE",
+    statusNote: "live · client-side",
+    uptime: "7MO",
+    coreShift: 4.5,
+    cta: { kind: "external", label: "Launch Forge Studio", href: "https://web3forge.chakraportfolio.xyz/" },
+  },
+  {
     id: "finders",
     ring: "C",
     category: "Sites",
@@ -178,7 +196,7 @@ export const PROJECT_BY_ID = Object.fromEntries(PROJECTS.map((p) => [p.id, p]));
 // Ring definitions (brief §2.3). Radius grows outward A→B→C.
 export const RINGS = {
   A: { id: "A", label: "APPS", radius: 3.1, projects: ["orion", "ekko"] },
-  B: { id: "B", label: "TOOLS", radius: 4.35, projects: ["joust", "widow"] },
+  B: { id: "B", label: "TOOLS", radius: 4.35, projects: ["joust", "widow", "forge"] },
   C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "bonkler", "dia"] },
 };
 
@@ -191,4 +209,4 @@ export const CONTACT = {
 
 // notes.txt — operator writes this directly (brief §7). Honest placeholder.
 export const NOTES =
-  "eight processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";
+  "nine processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";
