@@ -152,7 +152,7 @@ export function createForgeFx({ reduced = false } = {}) {
     const stageTop = panel.y + headerH;
     const stageH = panel.h - headerH;
     const cardSize = Math.min(stageW * (mobile ? 0.52 : 0.43), stageH * 0.52);
-    const targetX = stageX + stageW * 0.57 - cardSize / 2;
+    const targetX = stageX + stageW * (mobile ? 0.57 : 0.18) - cardSize / 2;
     const targetY = stageTop + stageH * 0.43 - cardSize / 2;
     const cycle = reduced ? 0.72 : (time % 6) / 6;
     const assemble = ease(cycle / 0.58);
