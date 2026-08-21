@@ -200,8 +200,10 @@ export function createBonklerFx({ reduced = false } = {}) {
     const bob = Math.sin(frameTime * 3.2) * (reduced ? 0 : 3);
     const leftX = panel.x + panel.w * (mobile ? 0.35 : 0.34);
     const rightX = panel.x + panel.w * (mobile ? 0.68 : 0.72);
-    drawFighter(fighterA, leftX, floorY + bob, fighterHeight, aAttack * panel.w * 0.13, false, aHit);
-    drawFighter(fighterB, rightX, floorY - bob, fighterHeight, -bAttack * panel.w * 0.13, true, bHit);
+    // Mirror the left unit toward stage-right and keep the right unit facing
+    // stage-left: weapons lead into the encounter, shields stay on the outside.
+    drawFighter(fighterA, leftX, floorY + bob, fighterHeight, aAttack * panel.w * 0.13, true, aHit);
+    drawFighter(fighterB, rightX, floorY - bob, fighterHeight, -bAttack * panel.w * 0.13, false, bHit);
     drawImpact((leftX + rightX) / 2, floorY - fighterHeight * 0.52, Math.max(aAttack, bAttack));
     drawLog(panel, aAttack, bAttack);
 
