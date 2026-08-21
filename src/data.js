@@ -125,10 +125,10 @@ export const PROJECTS = [
     stack: ["Vite 8", "JavaScript", "Three.js", "GSAP", "WebGL", "Canvas"],
     role: "Concept, product design, full build",
     status: "PROTOTYPE",
-    statusNote: "prototype · deployment pending",
+    statusNote: "live prototype · research use only",
     uptime: "1MO",
     coreShift: 4.4, // fluid field + molecular pair own the open side of the stage
-    cta: { kind: "status", label: "Deployment pending" },
+    cta: { kind: "external", label: "Enter life.exe", href: "https://life-exe-eight.vercel.app/" },
   },
   {
     id: "bonkler",
