@@ -155,15 +155,15 @@ export const PROJECTS = [
     name: "Dead Internet Archive",
     glyph: "骸",
     color: "#6BFF8E",
-    thesis: "A clothing archive broadcast from a dead CRT.",
+    thesis: "A demo storefront broadcast from a dead CRT.",
     description:
-      "Artifacts from the digital void: a streetwear archive presented as a haunted CRT monitor that never got switched off. The landing page is the monitor itself — click into the screen and the archive plays out between channels of dead-internet static. Originally a live Shopify Hydrogen storefront; preserved as a static reference build now that the store is offline.",
-    stack: ["React", "React Router 7", "Hydrogen", "CSS", "Shopify"],
-    role: "Concept, design, build",
-    status: "ARCHIVED",
-    statusNote: "reference build · store disconnected",
-    uptime: "12MO",
-    cta: { kind: "status", label: "Static redeploy pending" },
+      "A zero-backend storefront for artifacts from the digital void. The sticker-covered CRT cycles live channels before opening a ten-item catalog, persistent local cart, and deliberately offline checkout.",
+    stack: ["HTML", "CSS", "JavaScript", "WebP", "Vercel"],
+    role: "Concept, art direction, design, full build",
+    status: "LIVE DEMO",
+    statusNote: "live demo storefront · payments offline",
+    uptime: "1MO",
+    cta: { kind: "external", label: "Enter Demo Store", href: "https://dead-internet-archive-demo.vercel.app/" },
   },
 ];
 
