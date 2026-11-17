@@ -1,5 +1,5 @@
 /**
- * Build public/fx/rosie.glb from the Orion Terminal companion model.
+ * Build public/fx/rosie.glb from the Orion Studio companion model.
  * - keeps only the clips the portfolio uses (spawn / bow / idle)
  * - welds + simplifies the mesh, quantizes attributes (no decoder needed)
  * - recompresses the 2048px PNG texture to 1024px WebP

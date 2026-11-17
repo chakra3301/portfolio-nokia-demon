@@ -1,8 +1,8 @@
 /**
- * Orion Terminal daemon backdrop — R.O.S.I.E (Recursive Oracle: Sentient
+ * Orion Studio daemon backdrop — R.O.S.I.E (Recursive Oracle: Sentient
  * Interface Entity) spawns into the process and introduces herself.
  *
- * Her real 3D character (the Orion Terminal companion GLB, re-compressed to
+ * Her real 3D character (the Orion Studio companion GLB, re-compressed to
  * ~3.4 MB and lazy-loaded only when this daemon opens) is rendered in a
  * private Three.js scene to an offscreen WebGL canvas, then composited onto
  * a 2D canvas with a slice-glitch materialize, typed caption, and spawn

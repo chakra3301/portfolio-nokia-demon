@@ -181,6 +181,9 @@ const POST_FRAG = /* glsl */ `
   uniform sampler2D uFxTex;      // per-daemon backdrop (e.g. Joust duel)
   uniform float uFxAmt;          // 0 off .. 1 full blend
   uniform float uFxOcclude;      // 0 = additive screen blend, 1 = alpha composite (solid subjects)
+  uniform float uFxDotPitch;     // 0 off; circular halftone for project animations
+  uniform float uFxBackgroundDim; // quieter field behind artwork, 0..1
+  uniform float uFxPreserveColor; // display-space artwork in the existing post pass
   varying vec2 vUv;
 
   // Character / "glyph" dither: quantise each cell's luminance to a monospace
@@ -218,6 +221,18 @@ const POST_FRAG = /* glsl */ `
   }
   float hash(vec2 p){ return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
 
+  vec4 sampleFx(vec2 uv) {
+    vec4 sampleColor = texture2D(uFxTex, uv);
+    // CanvasTexture decodes sRGB, while this instrument's post pass outputs
+    // display values directly. Restore original art colors when requested.
+    if (uFxPreserveColor > .5) {
+      vec3 c = sampleColor.rgb;
+      sampleColor.rgb = mix(c * 12.92, 1.055 * pow(max(c, vec3(0.0)), vec3(1.0 / 2.4)) - .055,
+        step(vec3(.0031308), c));
+    }
+    return sampleColor;
+  }
+
   void main(){
     vec2 frag = vUv * uRes;
     float pitch = max(uPitch, 1.0);
@@ -244,7 +259,18 @@ const POST_FRAG = /* glsl */ `
     // — tuned soft: inherit a little ambient scene color and let dim areas mix
     // in gently, so it reads as living IN the frame rather than pasted over it.
     if (uFxAmt > 0.001) {
-      vec4 fxS = texture2D(uFxTex, uvp);
+      src = mix(src, vec3(.007, .009, .012), uFxBackgroundDim * uFxAmt);
+      vec4 fxS = sampleFx(uvp);
+      if (uFxDotPitch > 0.0) {
+        vec2 dotCell = floor(frag / uFxDotPitch);
+        vec2 dotUv = (dotCell + 0.5) * uFxDotPitch / uRes;
+        fxS = sampleFx(dotUv);
+        float lum = dot(fxS.rgb, vec3(0.299, 0.587, 0.114));
+        float radius = 0.24 + 0.24 * sqrt(clamp(lum * 1.6, 0.0, 1.0));
+        float distanceFromDot = length(fract(frag / uFxDotPitch) - 0.5);
+        float dotInk = 1.0 - smoothstep(radius - 0.045, radius + 0.045, distanceFromDot);
+        fxS.rgb *= dotInk;
+      }
       if (uFxOcclude > 0.5) {
         // solid-subject composite: the canvas alpha carves the subject out of
         // the scene (black clothing reads as a true silhouette, not a hole)
@@ -279,6 +305,7 @@ const POST_FRAG = /* glsl */ `
       }
       if (uVideoBurn > 0.001) {                       // faint persistent ghost, under all
         float bl = dot(texture2D(uBurnTex, cu).rgb, vec3(0.299, 0.587, 0.114)) * uVideoBurn;
+        bl *= 1.0 - uFxBackgroundDim * uFxAmt;
         src = 1.0 - (1.0 - src) * (1.0 - vec3(bl));
       }
     }
@@ -486,12 +513,16 @@ export function createInstrument(canvas, { reduced = false } = {}) {
     uFxTex: { value: null },
     uFxAmt: { value: 0 },
     uFxOcclude: { value: 0 },
+    uFxDotPitch: { value: 0 },
+    uFxBackgroundDim: { value: 0 },
+    uFxPreserveColor: { value: 0 },
   };
   const postMat = new THREE.ShaderMaterial({ vertexShader: POST_VERT, fragmentShader: POST_FRAG, uniforms: postUniforms });
   postScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), postMat));
 
   // dither target (state) that we ease toward
   const dither = { pitch: 2.0, intensity: 0.55, mode: 0, warp: 0 };
+  let fxDotPitch = 0;
 
   // ── interaction state ─────────────────────────────────────────────────────
   const pointer = new THREE.Vector2(-2, -2);
@@ -512,6 +543,7 @@ export function createInstrument(canvas, { reduced = false } = {}) {
     const pr = renderer.getPixelRatio();
     rt.setSize(Math.floor(w * pr), Math.floor(h * pr));
     postUniforms.uRes.value.set(w * pr, h * pr);
+    postUniforms.uFxDotPitch.value = fxDotPitch * pr;
     baseCellPx = Math.max(6, Math.round(8 * pr)); // glyph-dither cell (device px)
     postUniforms.uCellPx.value = baseCellPx;
   }
@@ -820,7 +852,11 @@ export function createInstrument(canvas, { reduced = false } = {}) {
     if (hdriTex && hdriSource) hdriTex.needsUpdate = true;
   }
 
-  function setDaemonFx(sourceCanvas, amt = 1, occlude = 0) {
+  function setDaemonFx(sourceCanvas, amt = 1, occlude = 0, dotPitch = 0, { backgroundDim = 0, preserveColor = false } = {}) {
+    fxDotPitch = Math.max(0, dotPitch);
+    postUniforms.uFxDotPitch.value = fxDotPitch * renderer.getPixelRatio();
+    postUniforms.uFxBackgroundDim.value = sourceCanvas ? Math.max(0, Math.min(1, backgroundDim)) : 0;
+    postUniforms.uFxPreserveColor.value = sourceCanvas && preserveColor ? 1 : 0;
     if (!sourceCanvas) {
       fxSource = null;
       postUniforms.uFxAmt.value = 0;
@@ -857,7 +893,10 @@ export function createInstrument(canvas, { reduced = false } = {}) {
       const occ = postUniforms.uFxOcclude.value;
       fxTex.dispose();
       fxTex = null;
-      setDaemonFx(fxSource, amt, occ);
+      setDaemonFx(fxSource, amt, occ, fxDotPitch, {
+        backgroundDim: postUniforms.uFxBackgroundDim.value,
+        preserveColor: postUniforms.uFxPreserveColor.value > .5,
+      });
     }
     fxTex.needsUpdate = true;
   }

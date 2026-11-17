@@ -24,7 +24,7 @@ export const PROJECTS = [
     id: "orion",
     ring: "A",
     category: "Apps",
-    name: "Orion Terminal",
+    name: "Orion Studio",
     glyph: "オ",
     color: "#4DE8FF",
     thesis: "Visual AI Harness and WorkStation",
@@ -39,7 +39,7 @@ export const PROJECTS = [
     cta: {
       kind: "external",
       label: "Visit Open Beta",
-      href: "https://orion-terminal-delta.vercel.app/",
+      href: "https://orionterminal.app/",
     },
   },
   {
@@ -183,6 +183,42 @@ export const PROJECTS = [
     uptime: "1MO",
     cta: { kind: "external", label: "Enter Demo Store", href: "https://dead-internet-archive-demo.vercel.app/" },
   },
+  {
+    id: "emp",
+    ring: "C",
+    category: "Sites",
+    name: "EMP",
+    glyph: "戯",
+    color: "#E8173F",
+    thesis: "Every coding agent on your Mac, in one window.",
+    description:
+      "EMP is a Mac workspace for coding agents such as Claude Code, Codex, Hermes and pi. Run real agent sessions through chat, take over their terminals, and keep tasks running after the window closes. Suki coordinates work across agents, while scheduled prompts and a shared session history keep ongoing projects in one place.",
+    stack: ["JavaScript", "Three.js", "GLSL", "GSAP", "Vite"],
+    role: "Art direction, interaction design, full build",
+    status: "LIVE",
+    statusNote: "live website · macOS app download",
+    uptime: "11D",
+    coreShift: 6.2,
+    cta: { kind: "external", label: "Visit EMP", href: "https://emp.orionterminal.app/" },
+  },
+  {
+    id: "archives",
+    ring: "C",
+    category: "Sites",
+    name: "Archives 47",
+    glyph: "蔵",
+    color: "#27FF87",
+    thesis: "Notes, journal, mood boards and media, in one archive you can ask.",
+    description:
+      "Archives 47 is a personal knowledge app for Mac that keeps notes, journals, mood boards, media and databases in one local library. Link pages with wikilinks and backlinks, organize collections, and search by text or meaning. Ask Archive answers questions from your own notes, while Brain maps connections between linked and related ideas.",
+    stack: ["JavaScript", "Three.js", "GLSL", "Fluid simulation", "GSAP", "Vite"],
+    role: "Art direction, interaction design, full build",
+    status: "LIVE",
+    statusNote: "live website · macOS app download",
+    uptime: "3D",
+    coreShift: 6.2,
+    cta: { kind: "external", label: "Visit Archives 47", href: "https://archives.orionterminal.app/" },
+  },
 ];
 
 // Attach the stable PID readout string.
@@ -197,7 +233,7 @@ export const PROJECT_BY_ID = Object.fromEntries(PROJECTS.map((p) => [p.id, p]));
 export const RINGS = {
   A: { id: "A", label: "APPS", radius: 3.1, projects: ["orion", "ekko"] },
   B: { id: "B", label: "TOOLS", radius: 4.35, projects: ["joust", "widow", "forge"] },
-  C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "bonkler", "dia"] },
+  C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "bonkler", "dia", "emp", "archives"] },
 };
 
 // Root-terminal contact block (brief §2.6). Placeholders flagged for the operator.
@@ -209,4 +245,4 @@ export const CONTACT = {
 
 // notes.txt — operator writes this directly (brief §7). Honest placeholder.
 export const NOTES =
-  "nine processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";
+  "eleven processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";

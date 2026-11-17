@@ -1,7 +1,7 @@
 # NOKIADEMON
 
 An operable **cipher-instrument** portfolio. Not a page you read — a machine you
-operate. A chrome core sits at the center; nine projects orbit it as engraved
+operate. A chrome core sits at the center; eleven projects orbit it as engraved
 glyph-marks on three concentric rings. You don't click a project, you **decode**
 it: rotate a ring until its glyph aligns under the reticle, it locks, and the
 mechanism warps you into that project's running process.
@@ -72,7 +72,8 @@ node tools/capture-alt.mjs    # mobile + reduced-motion captures
 ## Open items (operator's, per brief §7 — real assets to add later)
 
 - [ ] `notes.txt` — replace the placeholder in `src/data.js` (`NOTES`) with your own words.
-- [ ] Final URLs / live status for **Orion Terminal** and **Selected Work** (`src/data.js`).
+- [x] Orion Studio now links to https://orionterminal.app/ (`src/data.js`).
+- [ ] Final URL / live status for **Selected Work** (`src/data.js`).
 - [ ] Contact: real **x** / **linkedin** handles + email (`CONTACT` in `src/data.js`; currently placeholders `#`, `hello@nokiademon.dev`).
 - [x] Loader footage wired: source `copy_C1B84886-...MOV` → transcoded grayscale to `public/loader.mp4` (960×720, ~650 KB). Rendered in the post pass as a **glyph (ASCII) dither** — each cell picks a monospace char from a dark→light ramp `" .:-=+*?#@"` by luminance (`scene.js` `asciiCell()` + a canvas glyph atlas; `uAscii` on during the loader). Cell size = `~8 * DPR` px. Last frame frozen to a CanvasTexture, screen-blended at ~0.12 as a persistent ghost. Tune: ramp/cell in `scene.js`, footage = swap `public/loader.mp4`.
 - Alternative considered: embedding the user's Unicorn Studio scene `69TbZHkL4pZyS9IghCf2` via CDN SDK. Rejected for the default build (external dep, second WebGL context, outside the JS budget / no-deps rule); the effect is reproduced natively instead. Can be added on request.
@@ -80,3 +81,21 @@ node tools/capture-alt.mjs    # mobile + reduced-motion captures
 - [ ] Optional: per-project logos/wordmarks for the daemon Identity panel
   (currently distinctive type + JP glyph-mark only).
 - [ ] Sound design — currently silent by design.
+
+## EMP and Archives 47
+
+EMP and Archives 47 join Ring C (Sites), with process descriptions that explain
+the apps' purpose and features. Their actions link to https://emp.orionterminal.app/
+and https://archives.orionterminal.app/. Orion Terminal is now listed as
+**Orion Studio**, linking to https://orionterminal.app/.
+
+`src/character-fx.js` uses EMP's original Jester and oversized red SVG title,
+drawn as colored luminance glyphs. The Jester greets on entry and reacts to clicks.
+`src/archives-title.js` uses the Archives hero's original wordmark and liquid-chrome
+shader: silver bevels, a thin green horizon and a subtle floor reflection.
+Original assets and shader references come from the local `emp-site` and
+`archives-site` projects. Matching desktop/portrait stills are included.
+
+Both effects load on demand, cap their buffers at 2M pixels, respect reduced
+motion and dispose renderers when leaving a project. Artwork settings live in
+`design-tokens.json`. The shared post pass preserves each project's original color.

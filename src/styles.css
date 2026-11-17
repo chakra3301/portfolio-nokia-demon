@@ -995,19 +995,23 @@ body[data-state="hub"] .ring-rail, body[data-state="hub"] .hub-readout { cursor:
 }
 
 .daemon-dot {
-  width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%;
+  position: relative; width: 1.75rem; height: 1.75rem; padding: 0; border: 0; border-radius: 50%;
+  background: transparent; cursor: pointer;
+}
+.daemon-dot::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+  border-radius: 50%; transform: translate(-50%, -50%);
   background: color-mix(in srgb, var(--fg) 22%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg) 12%, transparent);
-  cursor: pointer;
   transition: transform var(--dur-fast) var(--ease-out), background var(--dur-base), box-shadow var(--dur-base);
 }
-.daemon-dot[data-passed="true"] {
+.daemon-dot[data-passed="true"]::after {
   background: color-mix(in srgb, var(--proj, var(--white-hot)) 55%, var(--fg));
 }
-.daemon-dot[data-active="true"] {
+.daemon-dot[data-active="true"]::after {
   background: var(--proj, var(--white-hot));
   box-shadow: 0 0 14px color-mix(in srgb, var(--proj, var(--white-hot)) 70%, transparent);
-  transform: scale(1.25);
+  transform: translate(-50%, -50%) scale(1.25);
 }
 
 .daemon-card-viewport {
@@ -1158,4 +1162,10 @@ body[data-state="hub"] .ring-rail, body[data-state="hub"] .hub-readout { cursor:
   .daemon-stack-list span { font-size: 0.62rem; padding: 0.14rem 0.4rem; }
   #daemon::before { background: linear-gradient(180deg, rgba(6,7,10,0.88) 0%, rgba(6,7,10,0.55) 42%, rgba(6,7,10,0.2) 100%); }
   #daemon { justify-content: center; align-items: flex-end; padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* Leave a real character stage beside the two website cards on small laptops. */
+@media (min-aspect-ratio: 1/1) and (max-width: 1100px), (max-height: 540px) {
+  #daemon:is([data-project="emp"], [data-project="archives"]) .daemon-stage { width: min(40rem, 52vw); }
+  #daemon:is([data-project="emp"], [data-project="archives"]) .daemon-card { width: 100%; }
 }

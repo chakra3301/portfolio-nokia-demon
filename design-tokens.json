@@ -16,7 +16,9 @@
       "finders": "#E8C468",
       "life":    "#4E8CFF",
       "bonkler": "#00B8A9",
-      "selected": "#D8CFC0"
+      "selected": "#D8CFC0",
+      "emp": "#E8173F",
+      "archives": "#27FF87"
     }
   },
   "typography": {
@@ -46,5 +48,56 @@
     "warp":      { "pitch": 3.5, "intensity": 0.85, "mode": 1 },
     "daemon":    { "pitch": 2.0, "intensity": 0.28, "mode": 2 },
     "terminal":  { "pitch": 4.0, "intensity": 0.9,  "mode": 3 }
+  },
+  "characters": {
+    "$comment": "Route artwork: EMP Jester + original wordmark in luminance glyphs; Archives uses its website hero's original liquid-chrome title. Layout values are viewport fractions or CSS pixels.",
+    "maxPixels": 2000000,
+    "maxDpr": 1.25,
+    "enter": 1.3,
+    "followRate": 4.8,
+    "bodyYaw": 0.18,
+    "frame": {
+      "top": 0.08,
+      "bottom": 0.88,
+      "left": 0.49,
+      "right": 0.035,
+      "gutter": 28
+    },
+    "emp": {
+      "model": "/fx/emp-jester.glb",
+      "wordmark": {
+        "src": "/fx/emp-wordmark.svg",
+        "width": 1,
+        "height": 0.78,
+        "centerY": 0.53,
+        "textureWidth": 1536,
+        "textureHeight": 1024
+      },
+      "backgroundDim": 0.16,
+      "glyphs": " .\u00b7:-+=*empx#%EMP@",
+      "glyphCell": 5.5,
+      "envIntensity": 0.9,
+      "keyLight": 1.6,
+      "rimLight": 1.1
+    },
+    "archives": {
+      "wordmark": {
+        "src": "/fx/archives-wordmark.svg",
+        "width": 1,
+        "height": 0.78,
+        "centerY": 0.48
+      },
+      "backgroundDim": 0.68,
+      "chrome100": "#E6EEFC",
+      "chrome300": "#C3C3C3",
+      "chrome500": "#4B4B4B",
+      "chrome900": "#1D1D1D",
+      "accent": "#39FF88",
+      "bevel": 7,
+      "warp": 0.012,
+      "floorReflect": 0.22,
+      "floorRipple": 0.0016,
+      "floorFade": 0.32
+    }
   }
 }

@@ -46,6 +46,8 @@ const fxLoaders = {
   dia: () => import("./dia-fx.js").then(({ createDiaFx }) => createDiaFx({ reduced })),
   life: () => import("./life-fx.js").then(({ createLifeFx }) => createLifeFx({ reduced })),
   bonkler: () => import("./bonkler-fx.js").then(({ createBonklerFx }) => createBonklerFx({ reduced })),
+  emp: () => import("./character-fx.js").then(({ createCharacterFx }) => createCharacterFx("emp", { reduced })),
+  archives: () => import("./archives-title.js").then(({ createArchivesTitle }) => createArchivesTitle({ reduced })),
 };
 function ensureFx(id) {
   if (fxRegistry[id]) return Promise.resolve(fxRegistry[id]);
@@ -132,7 +134,7 @@ const BOOT_FEED = [
   [0.34, "allocating glyph field"],
   [0.52, "compositing dither grid"],
   [0.70, "seating chrome core"],
-  [0.86, "mounting 8 processes"],
+  [0.86, `mounting ${PROJECTS.length} processes`],
   [0.98, "ready"],
 ];
 
@@ -451,8 +453,11 @@ function enterProject(project) {
       if (state !== "daemon" || currentProject?.id !== project.id) return;
       if (fx) {
         fx.start();
-        // orion renders a solid character; everything else stays additive dither
-        instrument.setDaemonFx(fx.canvas, 1, ["orion", "bonkler"].includes(project.id) ? 1 : 0);
+        // Preserve the new projects' original glyph and liquid-chrome colors.
+        instrument.setDaemonFx(fx.canvas, 1, ["orion", "bonkler", "emp", "archives"].includes(project.id) ? 1 : 0, fx.dotPitch || 0, {
+          backgroundDim: fx.backgroundDim || 0, preserveColor: fx.preserveColor || false,
+        });
+        if (fx.dither) instrument.setDither(fx.dither);
       }
       glass?.start();
     });
@@ -503,6 +508,7 @@ function buildDaemon(project) {
   buildDaemonDots();
   updateDaemonDots();
   scenes.daemon.style.setProperty("--proj", project.color);
+  scenes.daemon.dataset.project = project.id;
   $("[data-daemon-card]")?.style.setProperty("--proj", project.color);
   resetDaemonCardTilt();
 }
@@ -573,9 +579,15 @@ function goDaemonPanel(i) {
   announce(`Panel ${i + 1} of ${daemonPanels.length}.`);
 }
 function exitDaemon() {
+  const departingId = currentProject?.id;
   for (const fx of activeFx()) fx.stop();
   liquidGlass?.stop();
   instrument.setDaemonFx(null, 0);
+  if (["emp", "archives"].includes(departingId) && fxRegistry[departingId]) {
+    fxRegistry[departingId].destroy?.();
+    delete fxRegistry[departingId];
+    delete fxPromises[departingId];
+  }
   setState("warp");
   instrument.backToHub(() => { goHub(); });
   announce("Backing out of process to the astrolabe.");
