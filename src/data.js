@@ -43,23 +43,6 @@ export const PROJECTS = [
     },
   },
   {
-    id: "ekko",
-    ring: "A",
-    category: "Apps",
-    name: "EKKO",
-    glyph: "エ",
-    color: "#B46BFF",
-    thesis: "An invite-only network where taste matches taste.",
-    description:
-      "Creatives and the people who hire them connect by swiping on each other's work, not on selfies and not through a feed. Every profile is a small self-made site; a mutual right-swipe opens a private channel. Invite-only by design to keep the signal high.",
-    stack: ["Next.js", "Turborepo", "TypeScript", "Supabase", "Radix", "iOS"],
-    role: "Product design, brand, engineering",
-    status: "RUNNING",
-    statusNote: "private beta · iOS v2.0.6",
-    uptime: "9MO",
-    cta: { kind: "external", label: "Visit Project", href: "https://ekkoconnect.app" },
-  },
-  {
     id: "joust",
     ring: "B",
     category: "Tools",
@@ -74,7 +57,7 @@ export const PROJECTS = [
     status: "RUNNING",
     statusNote: "public · npm: joustx",
     uptime: "5MO",
-    cta: { kind: "external", label: "Launch Joust", href: "https://chakra3301.github.io/AI-JOUSTING/" },
+    cta: { kind: "external", label: "Launch Joust", href: "https://joust.chakraportfolio.xyz/" },
   },
   {
     id: "widow",
@@ -92,7 +75,7 @@ export const PROJECTS = [
     statusNote: "public · npm: blackwidowx",
     uptime: "4MO",
     coreShift: 3.6, // give the web room to read against the dark
-    cta: { kind: "source", label: "View Source", href: "https://github.com/chakra3301" },
+    cta: { kind: "external", label: "Visit Black Widow", href: "https://blackwidow.chakraportfolio.xyz/" },
   },
   {
     id: "forge",
@@ -146,7 +129,7 @@ export const PROJECTS = [
     statusNote: "live prototype · research use only",
     uptime: "1MO",
     coreShift: 4.4, // fluid field + molecular pair own the open side of the stage
-    cta: { kind: "external", label: "Enter life.exe", href: "https://life-exe-eight.vercel.app/" },
+    cta: { kind: "external", label: "Enter life.exe", href: "https://life.chakraportfolio.xyz/" },
   },
   {
     id: "bonkler",
@@ -164,7 +147,7 @@ export const PROJECTS = [
     statusNote: "live · build 1.8.1 · instant demo mode",
     uptime: "1MO",
     coreShift: 4.7,
-    cta: { kind: "external", label: "Play Bonkler Battle", href: "https://bonkler-game.vercel.app/" },
+    cta: { kind: "external", label: "Play Bonkler Battle", href: "https://bonkler.chakraportfolio.xyz/" },
   },
   {
     id: "dia",
@@ -173,15 +156,16 @@ export const PROJECTS = [
     name: "Dead Internet Archive",
     glyph: "骸",
     color: "#6BFF8E",
-    thesis: "A demo storefront broadcast from a dead CRT.",
+    thesis: "Artifacts recovered from a broken internet.",
     description:
-      "A zero-backend storefront for artifacts from the digital void. The sticker-covered CRT cycles live channels before opening a ten-item catalog, persistent local cart, and deliberately offline checkout.",
+      "A clothing archive and demo storefront for nine original graphic garments. Browse the collection, inspect individual pieces, and keep selections in a persistent local cart. Checkout stays offline while the archive preserves the artwork and product details.",
     stack: ["HTML", "CSS", "JavaScript", "WebP", "Vercel"],
     role: "Concept, art direction, design, full build",
     status: "LIVE DEMO",
     statusNote: "live demo storefront · payments offline",
     uptime: "1MO",
-    cta: { kind: "external", label: "Enter Demo Store", href: "https://dead-internet-archive-demo.vercel.app/" },
+    coreShift: 6.2,
+    cta: { kind: "external", label: "Enter Demo Store", href: "https://dia.chakraportfolio.xyz/" },
   },
   {
     id: "emp",
@@ -231,18 +215,18 @@ export const PROJECT_BY_ID = Object.fromEntries(PROJECTS.map((p) => [p.id, p]));
 
 // Ring definitions (brief §2.3). Radius grows outward A→B→C.
 export const RINGS = {
-  A: { id: "A", label: "APPS", radius: 3.1, projects: ["orion", "ekko"] },
+  A: { id: "A", label: "APPS", radius: 3.1, projects: ["orion"] },
   B: { id: "B", label: "TOOLS", radius: 4.35, projects: ["joust", "widow", "forge"] },
   C: { id: "C", label: "SITES", radius: 5.6, projects: ["finders", "life", "bonkler", "dia", "emp", "archives"] },
 };
 
 // Root-terminal contact block (brief §2.6). Placeholders flagged for the operator.
 export const CONTACT = {
-  x: { label: "x", href: "#", value: "@chakra3301" },
-  linkedin: { label: "linkedin", href: "#", value: "in/lucaorion" },
+  x: { label: "x", href: "https://x.com/chakra3301", value: "@chakra3301" },
+  linkedin: { label: "linkedin", href: "https://www.linkedin.com/in/lucaorion", value: "in/lucaorion" },
   email: { label: "email", href: "mailto:hello@nokiademon.dev", value: "hello@nokiademon.dev" },
 };
 
 // notes.txt — operator writes this directly (brief §7). Honest placeholder.
 export const NOTES =
-  "eleven processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";
+  "ten processes, one operator. building instruments that think.\nmost of this runs in private beta. knock if you want in.";

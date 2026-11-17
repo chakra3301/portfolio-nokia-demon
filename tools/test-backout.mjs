@@ -17,7 +17,7 @@ await page.waitForTimeout(1200);
 console.log("after enter hub:", await stateOf());
 
 // enter a project via the rail
-await page.locator('.mark-btn[data-project="ekko"]').click();
+await page.locator('.mark-btn[data-project="joust"]').click();
 await page.waitForTimeout(1800);
 console.log("after select:", await stateOf(), "(expect daemon)");
 

@@ -48,10 +48,13 @@ export function createVoroField({ images = [], container, onHover, onPick, onDes
   // sample it modulo, so we can push the cell count high for the packed look
   // without any VRAM cost.
   const cells = 1400;
-  const capCols = Math.min(images.length, 5);
+  const capCols = Math.ceil(Math.sqrt(images.length));
   const capRows = Math.ceil(images.length / capCols);
+  const capacity = capCols * capRows;
   const virtualLayers = 1;
-  const tile = 640; // crisper posters (only images.length unique tiles, so cheap)
+  // Bound the expanded archive to a 4096px texture edge and ~50MB decoded.
+  // Full-size exports load separately when an artwork is opened.
+  const tile = Math.min(640, Math.floor(4096 / Math.max(capCols, capRows)), Math.floor(Math.sqrt(12_000_000 / images.length)));
 
   // One uncompressed-single version describing how our images tile into the
   // virtual array texture. The engine's LOD indexes media.versions by a cell's
@@ -68,7 +71,7 @@ export function createVoroField({ images = [], container, onHover, onPick, onDes
     tileHeight: tile,
     width: capCols * tile,
     height: capRows * tile,
-    layers: images.length,
+    layers: capacity,
     virtualLayers,
     layerIndexStart: 0,
     // layer → image URL, cycled across our set (browser caches the real files)
@@ -137,7 +140,9 @@ export function createVoroField({ images = [], container, onHover, onPick, onDes
   // wall can drive it interchangeably.
   let instance = null;
   let lastIdx = -1;
-  const idxOf = (cell) => (cell && cell.index != null ? cell.index % images.length : -1);
+  // Cell positions are reordered into a center-outward lattice. Metadata must
+  // follow the shader's media id, including the repeated slots in the last row.
+  const idxOf = (cell) => cell && cell.id != null ? (cell.id % capacity) % images.length : -1;
 
   // ── MODE (native voroforce SELECT, like the reference) ──────────────────────
   // Reconstructs the demo's un-vendored mode orchestration (app/vf/integrations/
@@ -233,12 +238,13 @@ export function createVoroField({ images = [], container, onHover, onPick, onDes
           onDeselect && onDeselect();
         }
       });
-      // Drive selection ourselves on click: the engine's own click→select path is
-      // gated behind `avgSpeedTotal < interactionMaxSpeed`, which can stay shut, so
-      // we call selectCell directly (toggle) — it dispatches the same `selected`.
+      // Use one selection handler. The engine's speed gate can prevent selection,
+      // while leaving both handlers attached can select and deselect in one click.
+      container.removeEventListener("click", instance.controls?.boundOnPointerClick);
       container.addEventListener("click", () => {
         const c = instance?.controls;
         if (!c) return;
+        if (c.pointer?.dragging) { c.pointer.dragging = false; return; }
         if (c.hasSelection?.()) { c.deselect?.(); return; }
         const idx = c.cells?.focusedIndex;
         if (idx != null && idx >= 0) c.selectCell?.(idx);
@@ -256,11 +262,13 @@ export function createVoroField({ images = [], container, onHover, onPick, onDes
       container.classList.add("is-active");
       container.setAttribute("aria-hidden", "false");
       boot();
+      instance?.resume();
     },
     deactivate() {
       container.classList.remove("is-active");
       container.setAttribute("aria-hidden", "true");
       if (mode === SELECT) instance?.controls?.deselect?.();
+      instance?.pause();
     },
     refreshAtlas() {},
     get instance() { return instance; },

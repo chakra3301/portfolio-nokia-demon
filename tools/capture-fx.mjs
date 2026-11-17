@@ -1,7 +1,7 @@
 /**
  * Drives into each daemon and screenshots its backdrop animation at staged
  * beats. Usage: node tools/capture-fx.mjs [url] [projectId ...]
- * Defaults to all new fx: finders ekko orion dia widow
+ * Defaults to all new fx: finders orion dia widow
  */
 import { chromium } from "playwright";
 import { mkdir } from "node:fs/promises";
@@ -10,7 +10,7 @@ import { resolve } from "node:path";
 const args = process.argv.slice(2);
 const url = args.find((a) => a.startsWith("http")) || "http://localhost:5183";
 const ids = args.filter((a) => !a.startsWith("http"));
-const projects = ids.length ? ids : ["finders", "ekko", "orion", "dia", "widow"];
+const projects = ids.length ? ids : ["finders", "orion", "dia", "widow"];
 const outDir = resolve(".previews");
 await mkdir(outDir, { recursive: true });
 

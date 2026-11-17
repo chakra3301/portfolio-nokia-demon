@@ -52,6 +52,8 @@ vec2 safeNorm(vec2 v) {
 
 vec3 sampleBg(vec2 screenPx) {
   vec2 uv = clamp(screenPx / max(uViewport, vec2(1.0)), vec2(0.0), vec2(1.0));
+  // Card coordinates start at the top; the uploaded texture is flipped for GL.
+  uv.y = 1.0 - uv.y;
   return texture2D(uTex, uv).rgb;
 }
 
@@ -77,7 +79,7 @@ vec3 blurBg(vec2 screenPx, float spread) {
 // rdev-style edge displacement from rounded-rect SDF
 vec2 edgeDisplacement(vec2 normCoord, float invDist) {
   float edge = 1.0 - clamp(invDist / 0.18, 0.0, 1.0);
-  float disp = smoothstep(0.85, 0.0, invDist * 8.0 - 0.15);
+  float disp = 1.0 - smoothstep(0.0, 0.85, invDist * 8.0 - 0.15);
   float scaled = smoothstep(0.0, 1.0, disp);
   vec2 displaced = normCoord * mix(1.0, 0.72 + scaled * 0.22, edge * uAnim);
   return displaced;
@@ -97,11 +99,11 @@ float panelDivits(vec2 uv) {
               * smoothstep(0.0, 0.018, 1.0 - uv.x) * smoothstep(0.0, 0.018, 1.0 - uv.y);
   d += (1.0 - bezel) * 0.55;
   // horizontal groove below dot rail
-  float railY = smoothstep(0.115, 0.105, uv.y) * smoothstep(0.095, 0.105, uv.y);
+  float railY = (1.0 - smoothstep(0.105, 0.115, uv.y)) * smoothstep(0.095, 0.105, uv.y);
   d += railY * 0.35;
   // vertical side channels
-  float sideL = smoothstep(0.04, 0.025, uv.x) * smoothstep(0.08, 0.04, uv.x);
-  float sideR = smoothstep(0.04, 0.025, 1.0 - uv.x) * smoothstep(0.08, 0.04, 1.0 - uv.x);
+  float sideL = (1.0 - smoothstep(0.025, 0.04, uv.x)) * (1.0 - smoothstep(0.04, 0.08, uv.x));
+  float sideR = (1.0 - smoothstep(0.025, 0.04, 1.0 - uv.x)) * (1.0 - smoothstep(0.04, 0.08, 1.0 - uv.x));
   d += max(sideL, sideR) * 0.28;
   // corner divots
   vec2 c1 = abs(uv - vec2(0.055, 0.055));
@@ -109,10 +111,10 @@ float panelDivits(vec2 uv) {
   vec2 c3 = abs(uv - vec2(0.055, 0.945));
   vec2 c4 = abs(uv - vec2(0.945, 0.945));
   float corner = min(min(length(c1), length(c2)), min(length(c3), length(c4)));
-  d += smoothstep(0.05, 0.012, corner) * 0.42;
+  d += (1.0 - smoothstep(0.012, 0.05, corner)) * 0.42;
   // center readout well
   vec2 well = abs(uv - vec2(0.5, 0.52));
-  float wellMask = smoothstep(0.38, 0.30, well.x) * smoothstep(0.42, 0.34, well.y);
+  float wellMask = (1.0 - smoothstep(0.30, 0.38, well.x)) * (1.0 - smoothstep(0.34, 0.42, well.y));
   d += wellMask * 0.18;
   return clamp(d, 0.0, 1.0);
 }
@@ -167,7 +169,7 @@ void main() {
   col += vec3(0.45, 0.52, 0.62) * spec * 0.14 * uAnim;
 
   // top edge catch light
-  float topRim = smoothstep(0.06, 0.0, vUv.y) * (1.0 - edgeAmt * 0.5);
+  float topRim = (1.0 - smoothstep(0.0, 0.06, vUv.y)) * (1.0 - edgeAmt * 0.5);
   col += vec3(0.55, 0.62, 0.72) * topRim * 0.16;
 
   // inner frame highlight
@@ -176,7 +178,7 @@ void main() {
   col += vec3(0.35, 0.42, 0.5) * (1.0 - frameIn) * 0.08;
 
   float alpha = smoothstep(-0.008, 0.015, invDist) * mix(0.88, 0.94, edgeAmt);
-  gl_FragColor = vec4(col, alpha);
+  gl_FragColor = vec4(col * alpha, alpha);
 }
 `;
 
@@ -276,11 +278,6 @@ export function createLiquidGlass({ shell, sourceCanvas, reduced = false }) {
 
     resize();
 
-    const vw = sourceCanvas.width || window.innerWidth;
-    const vh = sourceCanvas.height || window.innerHeight;
-    const sx = vw / window.innerWidth;
-    const sy = vh / window.innerHeight;
-
     gl.useProgram(prog);
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.enableVertexAttribArray(aPos);
@@ -293,16 +290,19 @@ export function createLiquidGlass({ shell, sourceCanvas, reduced = false }) {
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
     gl.uniform1i(uTex, 0);
+    // Keep the card and viewport in CSS pixels. Normalized texture coordinates
+    // remain correct regardless of the source canvas's capped pixel ratio.
     gl.uniform2f(uCardSize, rect.width, rect.height);
-    gl.uniform2f(uCardOrigin, rect.left * sx, rect.top * sy);
-    gl.uniform2f(uViewport, vw, vh);
+    gl.uniform2f(uCardOrigin, rect.left, rect.top);
+    gl.uniform2f(uViewport, window.innerWidth, window.innerHeight);
     gl.uniform1f(uTime, (now - startedAt) * 0.001);
     gl.uniform1f(uRadius, 6.0);
     gl.uniform1f(uAnim, reduced ? 0.0 : 1.0);
     gl.uniform2f(uTilt, tilt[0], tilt[1]);
 
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // The browser composites a premultiplied canvas. Write it once rather than
+    // multiplying its alpha twice while blending into a transparent buffer.
+    gl.disable(gl.BLEND);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

@@ -1,0 +1,473 @@
+{
+  "tile": 256,
+  "groups": {
+    "background": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "base": [
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "face": [
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "hat": [
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37
+    ],
+    "accessory": [
+      38,
+      39,
+      40,
+      41,
+      42
+    ],
+    "frame": [
+      43,
+      44,
+      45
+    ],
+    "left": [
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ],
+    "right": [
+      52,
+      53,
+      54,
+      55,
+      56,
+      57
+    ],
+    "topLeft": [
+      58,
+      59,
+      60,
+      61,
+      62,
+      63
+    ],
+    "topRight": [
+      64,
+      65,
+      66,
+      67,
+      68,
+      69
+    ],
+    "overlay": [
+      70,
+      71,
+      72,
+      73
+    ]
+  },
+  "sprites": [
+    {
+      "file": "Backgrounds/windows-low-qualy.png",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/rainbow-checker.png",
+      "x": 262,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/epic-space.png",
+      "x": 522,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/neon-tokyo.png",
+      "x": 782,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/blue-core.png",
+      "x": 1042,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/candy-space.png",
+      "x": 1302,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/pink-domo.png",
+      "x": 1562,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/gameboy-pokemon-japanese.png",
+      "x": 1822,
+      "y": 2
+    },
+    {
+      "file": "Backgrounds/VaporwaveIcon.png",
+      "x": 2,
+      "y": 262
+    },
+    {
+      "file": "Backgrounds/webamp.png",
+      "x": 262,
+      "y": 262
+    },
+    {
+      "file": "Backgrounds/glorp.png",
+      "x": 522,
+      "y": 262
+    },
+    {
+      "file": "Backgrounds/scene-green.png",
+      "x": 782,
+      "y": 262
+    },
+    {
+      "file": "base/OG.png",
+      "x": 1042,
+      "y": 262
+    },
+    {
+      "file": "base/rainbow.png",
+      "x": 1302,
+      "y": 262
+    },
+    {
+      "file": "base/pink-cheetah.png",
+      "x": 1562,
+      "y": 262
+    },
+    {
+      "file": "base/galaxy.png",
+      "x": 1822,
+      "y": 262
+    },
+    {
+      "file": "base/clown.png",
+      "x": 2,
+      "y": 522
+    },
+    {
+      "file": "base/light-blue.png",
+      "x": 262,
+      "y": 522
+    },
+    {
+      "file": "base/green.png",
+      "x": 522,
+      "y": 522
+    },
+    {
+      "file": "base/pink.png",
+      "x": 782,
+      "y": 522
+    },
+    {
+      "file": "base/dark-blue.png",
+      "x": 1042,
+      "y": 522
+    },
+    {
+      "file": "base/star.png",
+      "x": 1302,
+      "y": 522
+    },
+    {
+      "file": "base/stoned.png",
+      "x": 1562,
+      "y": 522
+    },
+    {
+      "file": "base/love.png",
+      "x": 1822,
+      "y": 522
+    },
+    {
+      "file": "Special face/zombie-cat.png",
+      "x": 2,
+      "y": 782
+    },
+    {
+      "file": "Special face/demon.png",
+      "x": 262,
+      "y": 782
+    },
+    {
+      "file": "Special face/Cybernetic_Epic_Face.png",
+      "x": 522,
+      "y": 782
+    },
+    {
+      "file": "Special face/cool-face.png",
+      "x": 782,
+      "y": 782
+    },
+    {
+      "file": "Special face/Unicorn.png",
+      "x": 1042,
+      "y": 782
+    },
+    {
+      "file": "Special face/Nightmare_Epic_Face.png",
+      "x": 1302,
+      "y": 782
+    },
+    {
+      "file": "hat/Obey.png",
+      "x": 1562,
+      "y": 782
+    },
+    {
+      "file": "hat/crown.png",
+      "x": 1822,
+      "y": 782
+    },
+    {
+      "file": "hat/emo-hair-pink.png",
+      "x": 2,
+      "y": 1042
+    },
+    {
+      "file": "hat/emo-hair-green.png",
+      "x": 262,
+      "y": 1042
+    },
+    {
+      "file": "hat/domo-hat.png",
+      "x": 522,
+      "y": 1042
+    },
+    {
+      "file": "hat/galaxy-obey.png",
+      "x": 782,
+      "y": 1042
+    },
+    {
+      "file": "hat/partyy.png",
+      "x": 1042,
+      "y": 1042
+    },
+    {
+      "file": "hat/Angel_Epic_Face.png",
+      "x": 1302,
+      "y": 1042
+    },
+    {
+      "file": "Accessories/3D-Glasses.png",
+      "x": 1562,
+      "y": 1042
+    },
+    {
+      "file": "Accessories/Pit-vipers.png",
+      "x": 1822,
+      "y": 1042
+    },
+    {
+      "file": "Accessories/usa-party-glasses.png",
+      "x": 2,
+      "y": 1302
+    },
+    {
+      "file": "Accessories/Love-eye-patch.png",
+      "x": 262,
+      "y": 1302
+    },
+    {
+      "file": "Accessories/Mustach.png",
+      "x": 522,
+      "y": 1302
+    },
+    {
+      "file": "Frame/sticker-pack.png",
+      "x": 782,
+      "y": 1302
+    },
+    {
+      "file": "Frame/sticker-pack-2.png",
+      "x": 1042,
+      "y": 1302
+    },
+    {
+      "file": "Frame/sticker-pack-3.png",
+      "x": 1302,
+      "y": 1302
+    },
+    {
+      "file": "sticker left/Bonkler.png",
+      "x": 1562,
+      "y": 1302
+    },
+    {
+      "file": "sticker left/diamond-sword.png",
+      "x": 1822,
+      "y": 1302
+    },
+    {
+      "file": "sticker left/bulbasor.png",
+      "x": 2,
+      "y": 1562
+    },
+    {
+      "file": "sticker left/hello-kitty.png",
+      "x": 262,
+      "y": 1562
+    },
+    {
+      "file": "sticker left/Glorp.png",
+      "x": 522,
+      "y": 1562
+    },
+    {
+      "file": "sticker left/white-puffle.png",
+      "x": 782,
+      "y": 1562
+    },
+    {
+      "file": "sticker right/Kirby-Headphones.png",
+      "x": 1042,
+      "y": 1562
+    },
+    {
+      "file": "sticker right/8bit-cat.png",
+      "x": 1302,
+      "y": 1562
+    },
+    {
+      "file": "sticker right/KUROMI.png",
+      "x": 1562,
+      "y": 1562
+    },
+    {
+      "file": "sticker right/ipod.png",
+      "x": 1822,
+      "y": 1562
+    },
+    {
+      "file": "sticker right/Maple-story-mushroom.png",
+      "x": 2,
+      "y": 1822
+    },
+    {
+      "file": "sticker right/digi-cam.png",
+      "x": 262,
+      "y": 1822
+    },
+    {
+      "file": "sticker top left/zombie-nyan-cat.png",
+      "x": 522,
+      "y": 1822
+    },
+    {
+      "file": "sticker top left/GORILLAZ.png",
+      "x": 782,
+      "y": 1822
+    },
+    {
+      "file": "sticker top left/MLP.png",
+      "x": 1042,
+      "y": 1822
+    },
+    {
+      "file": "sticker top left/EPIC-FACE.png",
+      "x": 1302,
+      "y": 1822
+    },
+    {
+      "file": "sticker top left/pink-swag.png",
+      "x": 1562,
+      "y": 1822
+    },
+    {
+      "file": "sticker top left/Winamp.png",
+      "x": 1822,
+      "y": 1822
+    },
+    {
+      "file": "stick top right/monster.png",
+      "x": 2,
+      "y": 2082
+    },
+    {
+      "file": "stick top right/sonic.png",
+      "x": 262,
+      "y": 2082
+    },
+    {
+      "file": "stick top right/doritos.png",
+      "x": 522,
+      "y": 2082
+    },
+    {
+      "file": "stick top right/jet-set-radio.png",
+      "x": 782,
+      "y": 2082
+    },
+    {
+      "file": "stick top right/beyblade.png",
+      "x": 1042,
+      "y": 2082
+    },
+    {
+      "file": "stick top right/Fairy-Odd-Parents.png",
+      "x": 1302,
+      "y": 2082
+    },
+    {
+      "file": "overlays/AND-BE-EPIC.png",
+      "x": 1562,
+      "y": 2082
+    },
+    {
+      "file": "overlays/Internet-party.png",
+      "x": 1822,
+      "y": 2082
+    },
+    {
+      "file": "overlays/HAIIIIII.png",
+      "x": 2,
+      "y": 2342
+    },
+    {
+      "file": "overlays/pokemon-vmax.png",
+      "x": 262,
+      "y": 2342
+    }
+  ]
+}

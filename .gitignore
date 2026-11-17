@@ -6,3 +6,7 @@ dist/
 .env
 .env.*
 .vite/
+.tmp/
+.vercel/
+.vercel
+.env*

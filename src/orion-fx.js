@@ -2,8 +2,8 @@
  * Orion Studio daemon backdrop — R.O.S.I.E (Recursive Oracle: Sentient
  * Interface Entity) spawns into the process and introduces herself.
  *
- * Her real 3D character (the Orion Studio companion GLB, re-compressed to
- * ~3.4 MB and lazy-loaded only when this daemon opens) is rendered in a
+ * Her current 3D character (the original Orion Studio companion GLB,
+ * ~3 MB and lazy-loaded only when this daemon opens) is rendered in a
  * private Three.js scene to an offscreen WebGL canvas, then composited onto
  * a 2D canvas with a slice-glitch materialize, typed caption, and spawn
  * rings. The instrument's ordered-Bayer post pass requantizes the whole
@@ -11,10 +11,15 @@
  * her a half-beat late and occasionally desyncs) render in the same
  * dot-dither art as the other daemon animations.
  *
- * Timeline: load → glitch-in → Formal_Bow (caption types) → Idle_15 loop
+ * Timeline: load → glitch-in → Bashful (caption types) → Happy loop
  *           → the shadow flickers in behind her … and stays.
  */
 import * as THREE from "three";
+import { budgetPixelRatio } from "./render-budget.js";
+
+const MODEL_URL = "/fx/rosie.glb?v=studio-20261111";
+const GREETING_CLIP = "Bashful";
+const IDLE_CLIP = "Happy";
 
 const ACCENT = "#4DE8FF";       // Orion project cyan
 const SHADOW_RED = "#8C1224";
@@ -33,6 +38,7 @@ export function createOrionFx({ reduced = false } = {}) {
   const canvas = document.createElement("canvas"); // 2D composite (what the instrument samples)
   const ctx = canvas.getContext("2d", { alpha: true });
   let active = false;
+  let destroyed = false;
   let w = 0, h = 0, dpr = 1;
   let t = 0;
 
@@ -48,15 +54,16 @@ export function createOrionFx({ reduced = false } = {}) {
   let feetScreen = { x: 0.66, y: 0.8 }; // normalized anchor, updated by projection
 
   function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2); // match the other fx canvases
     w = window.innerWidth;
     h = window.innerHeight;
+    dpr = budgetPixelRatio(w, h, Math.min(window.devicePixelRatio || 1, 1.5), 2_000_000);
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     canvas.style.width = `${w}px`;
     canvas.style.height = `${h}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (three) {
+      three.renderer.setPixelRatio(dpr);
       three.renderer.setSize(w, h, false);
       three.camera.aspect = w / h;
       three.camera.updateProjectionMatrix();
@@ -77,25 +84,30 @@ export function createOrionFx({ reduced = false } = {}) {
     if (loadState !== "idle") return;
     loadState = "loading";
     try {
-      const [{ GLTFLoader }, { clone: skClone }] = await Promise.all([
+      const [{ GLTFLoader }, { clone: skClone }, { MeshoptDecoder }] = await Promise.all([
         import("three/examples/jsm/loaders/GLTFLoader.js"),
         import("three/examples/jsm/utils/SkeletonUtils.js"),
+        import("three/examples/jsm/libs/meshopt_decoder.module.js"),
       ]);
-      const gltf = await new GLTFLoader().loadAsync("/fx/rosie.glb");
+      const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(MODEL_URL);
+      if (destroyed) { disposeObject(gltf.scene); return; }
 
       // alpha canvas: the 2D pass paints a holo-glow BEHIND her, so her black
       // outfit reads as a hard silhouette instead of vanishing in the screen blend
       const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: "high-performance" });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setPixelRatio(dpr);
       renderer.setClearColor(0x000000, 0);
       renderer.setSize(w || window.innerWidth, h || window.innerHeight, false);
 
-      // IMPORTANT: the model is tiny (~0.017 units tall) and its clips carry
-      // root-motion keys in that raw scale. Scaling the mesh up amplifies the
-      // root motion into meters of drift — so we keep the model at native
-      // scale and bring the CAMERA to it instead. U = her raw height.
+      // Fit the app's authored idle pose at native scale, keeping its retargeted
+      // animation and original black suit / pearl armor materials intact.
       const char = gltf.scene;
-      const box = new THREE.Box3().setFromObject(char);
+      const clips = Object.fromEntries(gltf.animations.map(clip => [clip.name, clip]));
+      const mixer = new THREE.AnimationMixer(char);
+      playLoop(mixer, clips, IDLE_CLIP);
+      mixer.update(0);
+      char.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(char, true);
       const size = box.getSize(new THREE.Vector3());
       const U = size.y || 1;
       char.position.y -= box.min.y;
@@ -129,10 +141,6 @@ export function createOrionFx({ reduced = false } = {}) {
       const stage = new THREE.Group();
       stage.add(char);
       scene.add(stage);
-
-      const clips = {};
-      for (const c of gltf.animations) clips[c.name] = c;
-      const mixer = new THREE.AnimationMixer(char);
 
       // the evil shadow — her dark double, looming larger, half a beat behind
       const shadow = skClone(char);
@@ -200,12 +208,13 @@ export function createOrionFx({ reduced = false } = {}) {
     spawnRings = reduced ? [] : [{ age: 0, life: 1.1 }, { age: -0.25, life: 1.2 }];
     three.mixer.stopAllAction();
     three.shadowMixer.stopAllAction();
+    playLoop(three.mixer, three.clips, IDLE_CLIP);
+    three.mixer.update(0);
     if (reduced) {
-      playLoop(three.mixer, three.clips, "Idle_15");
       three.mixer.update(0.01);
       // static, faint shadow — present but not animated
       for (const m of three.shadowMats) m.opacity = 0.5;
-      playLoop(three.shadowMixer, three.clips, "Idle_15");
+      playLoop(three.shadowMixer, three.clips, IDLE_CLIP);
       three.shadowMixer.update(0.01);
     }
   }
@@ -337,19 +346,18 @@ export function createOrionFx({ reduced = false } = {}) {
     if (phase === "spawn" && phaseT > 0.95) {
       phase = "bow";
       phaseT = 0;
-      bowAction = playOnce(mixer, clips, "Formal_Bow");
+      bowAction = playOnce(mixer, clips, GREETING_CLIP, mixer.clipAction(clips[IDLE_CLIP]));
     } else if (phase === "bow") {
-      // the full clip is ~8s; take the dip and the rise, then hand off to idle
-      const bowDur = Math.min(clips.Formal_Bow ? clips.Formal_Bow.duration - 0.4 : 2.5, 3.5);
+      const bowDur = clips[GREETING_CLIP] ? clips[GREETING_CLIP].duration - 0.4 : 2.5;
       if (phaseT > bowDur) {
         phase = "idle";
         phaseT = 0;
-        playLoop(mixer, clips, "Idle_15", bowAction);
+        playLoop(mixer, clips, IDLE_CLIP, bowAction);
       }
     } else if (phase === "idle" && !shadowOn && !reduced && phaseT > 1.3) {
       shadowOn = true;
       shadowRevealT = t;
-      playLoop(shadowMixer, clips, "Idle_15");
+      playLoop(shadowMixer, clips, IDLE_CLIP);
     }
 
     // typing starts with the bow
@@ -399,10 +407,27 @@ export function createOrionFx({ reduced = false } = {}) {
     ctx.globalAlpha = 1;
   }
 
+  function disposeObject(root) {
+    const textures = new Set(), materials = new Set(), geometries = new Set(), skeletons = new Set();
+    root.traverse(object => {
+      if (object.geometry) geometries.add(object.geometry);
+      if (object.skeleton) skeletons.add(object.skeleton);
+      for (const material of Array.isArray(object.material) ? object.material : object.material ? [object.material] : []) {
+        materials.add(material);
+        for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+      }
+    });
+    for (const resource of [...textures, ...materials, ...geometries, ...skeletons]) resource.dispose();
+  }
+
   return {
     canvas,
     get active() { return active; },
+    get ready() { return loadState === "ready"; },
+    get phase() { return phase; },
+    get elapsed() { return t; },
     start() {
+      if (destroyed) return;
       resize();
       active = true;
       t = 0; phaseT = 0;
@@ -427,9 +452,17 @@ export function createOrionFx({ reduced = false } = {}) {
     update,
     resize,
     destroy() {
-      three?.renderer.dispose();
+      this.stop();
+      destroyed = true;
+      if (three) {
+        three.mixer.uncacheRoot(three.char);
+        three.shadowMixer.uncacheRoot(three.shadow);
+        disposeObject(three.stage);
+        three.renderer.dispose();
+        three.renderer.forceContextLoss();
+      }
       three = null;
-      loadState = "idle";
+      canvas.width = canvas.height = 1;
     },
   };
 }

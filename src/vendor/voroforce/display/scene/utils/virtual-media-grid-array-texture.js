@@ -167,6 +167,22 @@ export class VirtualMediaGridArrayTexture extends Texture {
   }
 
   prepareLayerUpdate(index, bytes) {
+    // Local gallery exports have different natural dimensions. Upload a
+    // centered, fitted tile instead of texSubImage3D cropping its top-left.
+    if (bytes?.naturalWidth) {
+      const image = bytes
+      const tile = document.createElement('canvas')
+      tile.width = this.tileWidth
+      tile.height = this.tileHeight
+      const ctx = tile.getContext('2d')
+      const scale = Math.max(tile.width / image.naturalWidth, tile.height / image.naturalHeight)
+      ctx.fillStyle = '#06070a'
+      ctx.fillRect(0, 0, tile.width, tile.height)
+      ctx.drawImage(image, (tile.width - image.naturalWidth * scale) / 2,
+        (tile.height - image.naturalHeight * scale) / 2,
+        image.naturalWidth * scale, image.naturalHeight * scale)
+      bytes = tile
+    }
     this.pendingLayerUpdates.push({
       index,
       bytes,

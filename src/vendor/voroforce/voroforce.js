@@ -171,10 +171,25 @@ export class Voroforce extends CustomEventTarget {
   }
 
   start() {
+    if (this.suspended) return this
     this.simulationWarmedUp = false
     this.displayWarmedUp = false
     this.ticker.start()
     return this
+  }
+
+  pause() {
+    this.suspended = true
+    this.ticker.stop()
+    this.controls.removeWheelEventListeners()
+    this.controls.removeKeyboardEventListeners()
+  }
+
+  resume() {
+    this.suspended = false
+    this.controls.initWheelEventListeners()
+    this.controls.initKeyboardEventListeners()
+    this.start()
   }
 
   initEventListeners() {
@@ -189,7 +204,7 @@ export class Voroforce extends CustomEventTarget {
         () => {
           this.visible = true
           clearTimeout(this.tickerFreezeTimeout)
-          this.ticker.start()
+          this.start()
           this.dispatchEvent(
             new VisibilityChangeEvent({
               visible: true,
@@ -228,9 +243,9 @@ export class Voroforce extends CustomEventTarget {
           this.ticker.stop()
         }
       } else {
-        if (!this.ticker.running) {
+        if (!this.ticker.running && !this.suspended) {
           console.log('Resuming from sleep or throttling')
-          this.ticker.start()
+          this.start()
         }
       }
     }, 1000)

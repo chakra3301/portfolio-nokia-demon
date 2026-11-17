@@ -9,7 +9,6 @@
     "terminalPhosphor": "#3CFF9E",
     "project": {
       "orion":   "#4DE8FF",
-      "ekko":    "#B46BFF",
       "joust":   "#FFB84D",
       "widow":   "#FF3B5C",
       "forge":   "#9BCB4B",
@@ -17,6 +16,7 @@
       "life":    "#4E8CFF",
       "bonkler": "#00B8A9",
       "selected": "#D8CFC0",
+      "dia": "#6BFF8E",
       "emp": "#E8173F",
       "archives": "#27FF87"
     }
@@ -38,15 +38,23 @@
     }
   },
   "space": { "1": "0.25rem", "2": "0.5rem", "3": "0.75rem", "4": "1rem", "6": "1.5rem", "8": "2rem", "12": "3rem", "16": "4rem", "24": "6rem" },
+  "layout": {
+    "$comment": "Responsive instrument breakpoints. Width handles composition; compactHeight catches landscape phones and small laptop windows.",
+    "breakpoint": { "phone": "700px", "tablet": "1024px", "wide": "1600px", "compactHeight": "540px" },
+    "target": { "minimum": "24px", "comfortable": "44px" },
+    "safeGutter": "max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-left, 0px))"
+  },
   "motion": {
     "ease": { "out": "cubic-bezier(0.22, 1, 0.36, 1)", "inOut": "cubic-bezier(0.76, 0, 0.24, 1)", "seat": "cubic-bezier(0.34, 1.4, 0.5, 1)" },
-    "dur": { "fast": "160ms", "base": "340ms", "slow": "720ms", "warp": "1400ms" }
+    "dur": { "fast": "160ms", "base": "340ms", "slow": "720ms", "warp": "1400ms" },
+    "dia": { "$comment": "Hooded figure: timings in seconds, slow chest breathing, brief signal tears.", "enter": 1.1, "breathRate": 1.25, "breathAmount": 0.004, "glitchPeriod": 6.8, "glitchDuration": 0.35, "glitchDelay": 2.8 }
   },
   "dither": {
     "$comment": "Ordered-dither post pass. Pitch in device px; intensity 0..1. Mode: 0 engrave, 1 warp-glitch, 2 clean, 3 crt.",
     "astrolabe": { "pitch": 2.0, "intensity": 0.55, "mode": 0 },
     "warp":      { "pitch": 3.5, "intensity": 0.85, "mode": 1 },
     "daemon":    { "pitch": 2.0, "intensity": 0.28, "mode": 2 },
+    "dia":       { "dotPitch": 0, "pitch": 2.0, "intensity": 0.28, "mode": 2, "backgroundDim": 0 },
     "terminal":  { "pitch": 4.0, "intensity": 0.9,  "mode": 3 }
   },
   "characters": {
@@ -56,48 +64,17 @@
     "enter": 1.3,
     "followRate": 4.8,
     "bodyYaw": 0.18,
-    "frame": {
-      "top": 0.08,
-      "bottom": 0.88,
-      "left": 0.49,
-      "right": 0.035,
-      "gutter": 28
-    },
-    "emp": {
-      "model": "/fx/emp-jester.glb",
-      "wordmark": {
-        "src": "/fx/emp-wordmark.svg",
-        "width": 1,
-        "height": 0.78,
-        "centerY": 0.53,
-        "textureWidth": 1536,
-        "textureHeight": 1024
-      },
-      "backgroundDim": 0.16,
-      "glyphs": " .\u00b7:-+=*empx#%EMP@",
-      "glyphCell": 5.5,
-      "envIntensity": 0.9,
-      "keyLight": 1.6,
-      "rimLight": 1.1
-    },
+    "frame": { "top": 0.08, "bottom": 0.88, "left": 0.49, "right": 0.035, "gutter": 28 },
+    "emp": { "model": "/fx/emp-jester.glb", "wordmark": { "src": "/fx/emp-wordmark.svg", "width": 1, "height": 0.78, "centerY": 0.53, "textureWidth": 1536, "textureHeight": 1024 }, "backgroundDim": 0.16, "glyphs": " .·:-+=*empx#%EMP@", "glyphCell": 5.5, "envIntensity": 0.9, "keyLight": 1.6, "rimLight": 1.1 },
     "archives": {
-      "wordmark": {
-        "src": "/fx/archives-wordmark.svg",
-        "width": 1,
-        "height": 0.78,
-        "centerY": 0.48
-      },
+      "wordmark": { "src": "/fx/archives-wordmark.svg", "width": 1, "height": 0.78, "centerY": 0.48 },
       "backgroundDim": 0.68,
-      "chrome100": "#E6EEFC",
-      "chrome300": "#C3C3C3",
-      "chrome500": "#4B4B4B",
-      "chrome900": "#1D1D1D",
-      "accent": "#39FF88",
-      "bevel": 7,
-      "warp": 0.012,
-      "floorReflect": 0.22,
-      "floorRipple": 0.0016,
-      "floorFade": 0.32
+      "chrome100": "#E6EEFC", "chrome300": "#C3C3C3", "chrome500": "#4B4B4B", "chrome900": "#1D1D1D", "accent": "#39FF88",
+      "bevel": 7, "warp": 0.012,
+      "floorReflect": 0.22, "floorRipple": 0.0016, "floorFade": 0.32
     }
+  },
+  "hologram": {
+    "dia": { "$comment": "Alpha dots affect the figure only; pitch in CSS px, tear offset in image UVs.", "opacity": 0.9, "dotPitch": 2.6, "dotStrength": 0.3, "glitchOffset": 0.007, "tint": "#6BFF8E", "scanGlow": 0.018 }
   }
 }

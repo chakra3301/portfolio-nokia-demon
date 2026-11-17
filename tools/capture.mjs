@@ -40,7 +40,7 @@ await page.waitForTimeout(400);
 await shot("3-hub");
 
 // select a project via the rail (accessible path) → warp → daemon
-await page.locator('.mark-btn[data-project="ekko"]').click();
+await page.locator('.mark-btn[data-project="joust"]').click();
 await page.waitForTimeout(1800);
 await shot("4-daemon-identity");
 await page.mouse.wheel(0, 120);

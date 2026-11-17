@@ -15,6 +15,7 @@
 
 import { createArchiveField } from "./archive-field.js";
 import { createVoroField } from "./voro-real.js";
+import { mountGallery } from "./gallery.js";
 
 const INK = [236, 238, 240]; // --fg
 const BG = [6, 7, 10]; // --bg
@@ -83,11 +84,15 @@ function bestColumns(count, aspect) {
 export function initOperatorWall({ reduced = false } = {}) {
   const wall = document.querySelector("[data-op-wall]");
   if (!wall) return;
+  mountGallery(wall);
   const cells = Array.from(wall.querySelectorAll(".op-cell"));
   if (!cells.length) return;
   // Buttons retain their native semantics; the labelled container supplies the
   // collection context without overriding button roles with invalid listitems.
-  cells.forEach((cell) => cell.removeAttribute("role"));
+  cells.forEach((cell) => {
+    cell.removeAttribute("role");
+    cell.setAttribute("aria-label", `Open ${cell.dataset.title}`);
+  });
 
   // ── dither every tile once its image is ready ──────────────────────────────
   cells.forEach((cell) => {
@@ -115,7 +120,9 @@ export function initOperatorWall({ reduced = false } = {}) {
   let cols = 3;
   const layout = () => {
     const r = wall.getBoundingClientRect();
-    cols = bestColumns(cells.length, (r.width || 1) / (r.height || 1));
+    cols = cells.length > 24
+      ? Math.max(2, Math.min(6, Math.floor((r.width || 1) / 190)))
+      : bestColumns(cells.length, (r.width || 1) / (r.height || 1));
     wall.style.setProperty("--op-cols", cols);
   };
   layout();
@@ -189,78 +196,48 @@ export function initOperatorWall({ reduced = false } = {}) {
     });
   }
 
-  // ── metadata helpers (drive both the hover card and the detail modal) ───────
-  const tagList = (cell) =>
-    (cell.dataset.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
-  const fillTags = (ul, cell) => {
-    if (!ul) return;
-    ul.innerHTML = "";
-    tagList(cell).forEach((t) => {
-      const li = document.createElement("li");
-      li.textContent = t;
-      ul.appendChild(li);
-    });
-  };
-
-  // ── hover card (metadata for the tile under the cursor) ─────────────────────
-  const hc = document.querySelector("[data-op-hovercard]");
-  const hcEls = hc && {
-    bg: hc.querySelector("[data-op-hc-bg]"),
-    index: hc.querySelector("[data-op-hc-index]"),
-    title: hc.querySelector("[data-op-hc-title]"),
-    meta: hc.querySelector("[data-op-hc-meta]"),
-    tags: hc.querySelector("[data-op-hc-tags]"),
-    blurb: hc.querySelector("[data-op-hc-blurb]"),
-  };
-  const showHoverCard = (i) => {
-    if (!hc) return;
-    if (i < 0 || !cells[i]) { hc.classList.remove("is-open"); hc.setAttribute("aria-hidden", "true"); return; }
-    const cell = cells[i];
-    if (hcEls.bg) {
-      const full = cell.dataset.full || cell.querySelector("img")?.src || "";
-      if (full && hcEls.bg.getAttribute("src") !== full) hcEls.bg.src = full;
-    }
-    hcEls.index.textContent = cell.dataset.index || "";
-    hcEls.title.textContent = cell.dataset.title || "";
-    hcEls.meta.textContent = cell.dataset.meta || "";
-    hcEls.blurb.textContent = cell.dataset.blurb || "";
-    fillTags(hcEls.tags, cell);
-    hc.classList.add("is-open");
-    hc.setAttribute("aria-hidden", "false");
-  };
-
-  // ── detail modal (full file preview) ────────────────────────────────────────
+  // ── artwork-only viewer ───────────────────────────────────────────────────
   const lb = document.querySelector("[data-op-lightbox]");
-  const lbImg = lb && lb.querySelector("[data-op-lightbox-img]");
-  const lbCap = lb && lb.querySelector("[data-op-lightbox-cap]");
-  const lbTitle = lb && lb.querySelector("[data-op-lightbox-title]");
-  const lbIndex = lb && lb.querySelector("[data-op-lightbox-index]");
-  const lbMeta = lb && lb.querySelector("[data-op-lightbox-meta]");
-  const lbTags = lb && lb.querySelector("[data-op-lightbox-tags]");
+  const lbTitle = lb?.querySelector("[data-op-lightbox-title]");
+  const previewImage = lb?.querySelector("[data-op-preview-image]");
+  const previewVideo = lb?.querySelector("[data-op-preview-video]");
   let lastFocus = null;
+  const modalSiblings = () => section
+    ? Array.from(section.children).filter((child) => child !== lb)
+    : [];
 
   const openLightbox = (cell, fromField = false) => {
     if (!lb) return;
-    lastFocus = fromField ? null : cell;
-    lbImg.src = cell.dataset.full;
-    lbImg.alt = cell.querySelector("img")?.alt || "";
+    lastFocus = fromField ? section.querySelector(".op-back") : cell;
+    previewImage.hidden = !!cell.dataset.video;
+    previewVideo.hidden = !cell.dataset.video;
+    if (cell.dataset.video) {
+      previewVideo.poster = cell.dataset.full;
+      previewVideo.src = cell.dataset.video;
+      previewVideo.setAttribute("aria-label", cell.dataset.title);
+      previewVideo.load();
+    } else {
+      previewImage.src = cell.dataset.full;
+      previewImage.alt = cell.querySelector("img")?.alt || "";
+    }
     if (lbTitle) lbTitle.textContent = cell.dataset.title || "";
-    if (lbIndex) lbIndex.textContent = cell.dataset.index ? "FILE " + cell.dataset.index : "";
-    if (lbMeta) lbMeta.textContent = cell.dataset.meta || "";
-    if (lbCap) lbCap.textContent = cell.dataset.blurb || cell.dataset.cap || "";
-    fillTags(lbTags, cell);
-    showHoverCard(-1);
+    modalSiblings().forEach((element) => { element.inert = true; });
     lb.hidden = false;
     requestAnimationFrame(() => lb.classList.add("is-open"));
-    const closeBtn = lb.querySelector("[data-op-lightbox-close]");
+    const closeBtn = lb.querySelector("button[data-op-lightbox-close]");
     closeBtn && closeBtn.focus();
   };
   const closeLightbox = () => {
     if (!lb || lb.hidden) return;
+    previewVideo.pause();
+    previewVideo.removeAttribute("src");
+    previewVideo.load();
+    if (field?.selected) field.deselect();
     lb.classList.remove("is-open");
     const done = () => { lb.hidden = true; lb.removeEventListener("transitionend", done); };
     lb.addEventListener("transitionend", done);
     setTimeout(() => { if (!lb.hidden) done(); }, 400);
+    modalSiblings().forEach((element) => { element.inert = false; });
     if (lastFocus) lastFocus.focus();  // pointer/field opens don't yank focus back to the hidden grid
   };
 
@@ -276,6 +253,16 @@ export function initOperatorWall({ reduced = false } = {}) {
         if (e.key === "Escape" && !lb.hidden) {
           e.stopPropagation();
           closeLightbox();
+          return;
+        }
+        if (e.key === "Tab" && !lb.hidden) {
+          const focusable = Array.from(lb.querySelectorAll("button, video[controls], [href], [tabindex]:not([tabindex='-1'])"))
+            .filter((element) => !element.disabled && element.getClientRects().length);
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
         }
       },
       true
@@ -286,17 +273,7 @@ export function initOperatorWall({ reduced = false } = {}) {
   const section = document.getElementById("operator");
   const fieldCanvas = document.querySelector("[data-op-field]");
   const vfContainer = document.querySelector("[data-op-vf]");
-  const onPick = (i) => { if (i >= 0) openLightbox(cells[i], true); };
-  const onHover = (i) => { if (!lb || lb.hidden) showHoverCard(i); };
-
-  // ── native voroforce SELECT ───────────────────────────────────────────────
-  // Clicking a cell in the field triggers the engine's own select mode: the cell
-  // settles into a clean, flat rectangle IN THE FIELD ITSELF (no popup). We just
-  // surface that file's details in the glass card while it's selected, and Esc
-  // (or clicking again) deselects. The accessible grid + keyboard path still use
-  // the plain lightbox above.
-  const onVoroSelect = (i) => { if (i >= 0) showHoverCard(i); };
-  const onVoroDeselect = () => { showHoverCard(-1); };
+  const onPick = (i) => { if (i >= 0 && cells[i]) openLightbox(cells[i], true); };
   // Esc deselects the field first (capture beats the operator→hub handler)
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && field && field.selected) { e.stopPropagation(); field.deselect(); }
@@ -306,12 +283,12 @@ export function initOperatorWall({ reduced = false } = {}) {
   // voronoi shader, then (in setField) to the accessible dither grid.
   let usingVoro = true;
   let field = createVoroField({
-    images: cells.map((c) => c.dataset.full || c.querySelector("img")?.src),
+    images: cells.map((c) => c.querySelector("img")?.src),
     container: vfContainer,
     reduced,
-    onPick: onVoroSelect,
-    onDeselect: onVoroDeselect,
-    onHover,
+    // Keep the engine's native zoom-and-stabilize selection in the field.
+    onPick: () => vfContainer.classList.add("is-selected"),
+    onDeselect: () => vfContainer.classList.remove("is-selected"),
   });
   if (!field) {
     usingVoro = false;
@@ -319,12 +296,11 @@ export function initOperatorWall({ reduced = false } = {}) {
       images: cells.map((c) => c.querySelector("img")),
       reduced,
       onPick,
-      onHover,
     });
   }
   const activeFieldEl = usingVoro ? vfContainer : fieldCanvas;
 
-  // no field (no WebGL2 / reduced-motion / narrow): header flows above the grid
+  // No field (no WebGL2 / reduced-motion / narrow): show the scrollable grid.
   if (!field) {
     section && section.classList.add("no-field");
     wall.classList.remove("is-superseded");
@@ -353,7 +329,6 @@ export function initOperatorWall({ reduced = false } = {}) {
       if (field.selected) field.deselect();
       field.deactivate();
       section.classList.remove("kbd-grid");
-      showHoverCard(-1);
     }
   };
   // Tab changes pause GPU work without taking the logical operator route down.
@@ -364,7 +339,6 @@ export function initOperatorWall({ reduced = false } = {}) {
       if (field.selected) field.deselect();
       field.deactivate();
       section.classList.remove("kbd-grid");
-      showHoverCard(-1);
     } else if (fieldOn) {
       field.activate();
       window.__archiveActive = true;

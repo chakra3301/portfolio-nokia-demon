@@ -331,7 +331,9 @@ export default class BaseScene {
       },
     )
 
-    this.virtualMediaGridTextures = this.getUnCompressedMediaVersions().map(
+    // This integration shares one virtual atlas across the four LOD entries.
+    // Only index 0 is uploaded and sampled below; avoid three unused copies.
+    this.virtualMediaGridTextures = this.getUnCompressedMediaVersions().slice(0, 1).map(
       (mediaVersion) => {
         const { width, height, layers } = mediaVersion
         return new VirtualMediaGridArrayTexture(this.gl, {

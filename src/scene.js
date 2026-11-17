@@ -16,6 +16,7 @@ import * as THREE from "three";
 import gsap from "gsap";
 import { buildAtlas, glyphTexture } from "./glyphs.js";
 import { PROJECTS, RINGS } from "./data.js";
+import { budgetPixelRatio, INSTRUMENT_MAX_PIXELS } from "./render-budget.js";
 
 const COL = {
   bg: new THREE.Color("#06070A"),
@@ -326,7 +327,7 @@ const POST_FRAG = /* glsl */ `
     }
 
     // spark bloom during warp
-    outc += uWarp * 0.12 * smoothstep(0.4, 0.0, length(dir));
+    outc += uWarp * 0.12 * (1.0 - smoothstep(0.0, 0.4, length(dir)));
 
     // vignette
     float vig = 1.0 - uVignette * dot(dir, dir) * 1.4;
@@ -336,10 +337,11 @@ const POST_FRAG = /* glsl */ `
   }
 `;
 
-export function createInstrument(canvas, { reduced = false } = {}) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance", alpha: false });
-  const dprCap = window.matchMedia("(pointer: coarse)").matches ? 1.5 : 2;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
+export function createInstrument(canvas, { reduced = false, context } = {}) {
+  const renderer = new THREE.WebGLRenderer({ canvas, context, antialias: false, powerPreference: "high-performance", alpha: false });
+  const dprCap = window.matchMedia("(pointer: coarse)").matches ? 1.25 : 1.75;
+  const nativeRatio = () => Math.min(window.devicePixelRatio || 1, dprCap);
+  renderer.setPixelRatio(budgetPixelRatio(innerWidth, innerHeight, nativeRatio(), INSTRUMENT_MAX_PIXELS));
   renderer.setClearColor(COL.bg, 1);
 
   const scene = new THREE.Scene();
@@ -377,14 +379,15 @@ export function createInstrument(canvas, { reduced = false } = {}) {
   const glowTex = radialTexture();
   const glowMat = new THREE.SpriteMaterial({ map: glowTex, color: COL.whiteHot, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.5 });
   const glow = new THREE.Sprite(glowMat);
-  glow.scale.set(7, 7, 1);
+  // Keep light at the core; the former 7-unit sprite washed out the inner dial.
+  glow.scale.set(4.2, 4.2, 1);
   coreGroup.add(glow);
 
   // ── ambient glyph field (instanced billboards) ────────────────────────────
   const atlas = buildAtlas();
   const coarse = window.matchMedia("(pointer: coarse)").matches;
-  const fieldMedium = reduced ? 200 : coarse ? 260 : 540;
-  const fieldSmallExtra = reduced ? 80 : coarse ? 120 : 280;
+  const fieldMedium = reduced ? 180 : coarse ? 200 : 540;
+  const fieldSmallExtra = reduced ? 70 : coarse ? 80 : 280;
   const fieldCount = fieldMedium + fieldSmallExtra;
   const field = buildField(atlas, fieldCount, fieldMedium);
   const fieldUniforms = field.material.uniforms;
@@ -402,14 +405,14 @@ export function createInstrument(canvas, { reduced = false } = {}) {
     ringState[key] = { angle: gsap.utils.random(0.4, 2.6), vel: 0, activity: key === "B" ? 0.35 : 0.2, radius: def.radius, autoAligning: false };
     // ring tube
     const torus = new THREE.Mesh(
-      new THREE.TorusGeometry(def.radius, 0.022, 8, 180),
+      new THREE.TorusGeometry(def.radius, 0.022, 8, coarse ? 96 : 180),
       new THREE.ShaderMaterial({ vertexShader: CHROME_VERT, fragmentShader: CHROME_FRAG, uniforms: cloneChrome(coreUniforms), transparent: true })
     );
     torus.userData.ring = key;
     astro.add(torus);
     ringState[key].torus = torus;
     // graduations
-    astro.add(buildTicks(def.radius, 60));
+    astro.add(buildTicks(def.radius, coarse ? 40 : 60));
     // project marks
     const list = def.projects.map((id) => PROJECTS.find((p) => p.id === id));
     list.forEach((p, i) => {
@@ -537,12 +540,13 @@ export function createInstrument(canvas, { reduced = false } = {}) {
 
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
+    renderer.setPixelRatio(budgetPixelRatio(w, h, nativeRatio(), INSTRUMENT_MAX_PIXELS));
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     const pr = renderer.getPixelRatio();
     rt.setSize(Math.floor(w * pr), Math.floor(h * pr));
-    postUniforms.uRes.value.set(w * pr, h * pr);
+    postUniforms.uRes.value.set(rt.width, rt.height);
     postUniforms.uFxDotPitch.value = fxDotPitch * pr;
     baseCellPx = Math.max(6, Math.round(8 * pr)); // glyph-dither cell (device px)
     postUniforms.uCellPx.value = baseCellPx;
@@ -557,7 +561,9 @@ export function createInstrument(canvas, { reduced = false } = {}) {
     postUniforms.uTime.value = t;
 
     // ease dither toward target
-    postUniforms.uPitch.value += (dither.pitch - postUniforms.uPitch.value) * 0.12;
+    // Keep the apparent dot pitch constant if the pixel budget caps a large monitor.
+    const pitch = dither.pitch * renderer.getPixelRatio() / nativeRatio();
+    postUniforms.uPitch.value += (pitch - postUniforms.uPitch.value) * 0.12;
     postUniforms.uIntensity.value += (dither.intensity - postUniforms.uIntensity.value) * 0.12;
     postUniforms.uWarp.value += (dither.warp - postUniforms.uWarp.value) * 0.2;
     postUniforms.uMode.value = dither.mode;
@@ -626,10 +632,11 @@ export function createInstrument(canvas, { reduced = false } = {}) {
 
     warp.update?.(dt);
 
-    updateHdri();
-    updateDaemonFx();
-    // the fullscreen archive field takes over the screen — don't waste a draw
-    if (!window.__archiveActive) render();
+    if (!window.__archiveActive) {
+      updateHdri();
+      updateDaemonFx();
+      render();
+    }
   }
 
   function render() {
@@ -815,13 +822,21 @@ export function createInstrument(canvas, { reduced = false } = {}) {
 
   let hdriSource = null;
   let hdriTex = null;
+  let hdriVersion = null;
+  let lastHdriVersion = -1;
+  let hdriTexW = 0, hdriTexH = 0;
   let fxSource = null;
   let fxTex = null;
   let fxTexW = 0, fxTexH = 0; // dimensions the GPU storage was allocated at
 
-  function setHdriSource(sourceCanvas) {
+  function setHdriSource(sourceCanvas, frameVersion = hdriVersion) {
     if (!sourceCanvas) return;
     hdriSource = sourceCanvas;
+    hdriVersion = frameVersion;
+    if (hdriTex && (hdriTex.image !== sourceCanvas || hdriTexW !== sourceCanvas.width || hdriTexH !== sourceCanvas.height)) {
+      hdriTex.dispose();
+      hdriTex = null;
+    }
     if (!hdriTex) {
       hdriTex = new THREE.CanvasTexture(sourceCanvas);
       hdriTex.colorSpace = THREE.SRGBColorSpace;
@@ -829,6 +844,9 @@ export function createInstrument(canvas, { reduced = false } = {}) {
       hdriTex.minFilter = THREE.LinearFilter;
       hdriTex.magFilter = THREE.LinearFilter;
       hdriTex.generateMipmaps = false;
+      hdriTexW = sourceCanvas.width;
+      hdriTexH = sourceCanvas.height;
+      lastHdriVersion = -1;
     }
     hdriTex.image = sourceCanvas;
     coreUniforms.uEnvPanorama.value = hdriTex;
@@ -849,7 +867,12 @@ export function createInstrument(canvas, { reduced = false } = {}) {
   }
 
   function updateHdri() {
-    if (hdriTex && hdriSource) hdriTex.needsUpdate = true;
+    if (!hdriTex || !hdriSource) return;
+    if (hdriTexW !== hdriSource.width || hdriTexH !== hdriSource.height) setHdriSource(hdriSource);
+    const version = hdriVersion?.();
+    if (version != null && version === lastHdriVersion) return;
+    lastHdriVersion = version;
+    hdriTex.needsUpdate = true;
   }
 
   function setDaemonFx(sourceCanvas, amt = 1, occlude = 0, dotPitch = 0, { backgroundDim = 0, preserveColor = false } = {}) {
@@ -955,9 +978,11 @@ function radialTexture() {
   c.width = c.height = 256;
   const ctx = c.getContext("2d");
   const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-  g.addColorStop(0, "rgba(255,255,255,0.9)");
-  g.addColorStop(0.25, "rgba(255,255,255,0.28)");
-  g.addColorStop(1, "rgba(255,255,255,0)");
+  // Bake intensity into RGB, with an opaque black edge. Additive blending gives
+  // the same light without relying on a driver-specific canvas alpha upload.
+  g.addColorStop(0, "rgb(230,230,230)");
+  g.addColorStop(0.25, "rgb(71,71,71)");
+  g.addColorStop(1, "rgb(0,0,0)");
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 256);
   const t = new THREE.CanvasTexture(c);

@@ -502,6 +502,9 @@ export default class Controls extends BaseControls {
   }
 
   onKeyDown(e) {
+    // Native UI controls (including the portfolio back button and accessible
+    // artwork grid) keep their keyboard activation even after a tile is focused.
+    if (e.target?.closest?.('button, a, input, textarea, select, [contenteditable="true"]')) return
     if (!this.hasFocus()) return
 
     switch (e.code) {

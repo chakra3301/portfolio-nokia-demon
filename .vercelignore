@@ -1,0 +1,12 @@
+.git
+.tmp
+.previews
+reference
+deployments
+tools
+node_modules
+dist
+.env
+.env.*
+*.log
+jousting.toml
