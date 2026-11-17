@@ -43,19 +43,19 @@ and the operator archive load on demand.
 
 ## Production
 
-The portfolio is live at **https://chakraportfolio.xyz/** on Vercel project
-`portfolio-nokia-demon`. `www.chakraportfolio.xyz` redirects to the apex domain.
+The portfolio is live at **https://www.3301studios.com/** on Vercel project
+`portfolio-nokia-demon`. `3301studios.com` redirects to the www address.
 
 | Project | Production URL | Vercel project |
 |---------|----------------|----------------|
-| Orion Studio | https://orionterminal.app/ | `orion-terminal` |
-| Joust | https://joust.chakraportfolio.xyz/ | `joust` |
-| Black Widow | https://blackwidow.chakraportfolio.xyz/ | `blackwidow` |
-| Forge Studio | https://web3forge.chakraportfolio.xyz/ | `web-3-forge` |
+| Orion Studio | https://orionterminal.app/ | `orion-site` |
+| Joust | https://joust.3301studios.com/ | `joust` |
+| Black Widow | https://blackwidow.3301studios.com/ | `blackwidow` |
+| Forge Studio | https://web3forge.3301studios.com/ | `web-3-forge` |
 | Finders x Keepers | https://www.findersxkeepers.com/ | `finders-x-keepers-szad` |
-| life.exe | https://life.chakraportfolio.xyz/ | `life-exe` |
-| Bonkler Battle | https://bonkler.chakraportfolio.xyz/ | `bonkler-game` |
-| Dead Internet Archive | https://dia.chakraportfolio.xyz/ | `dead-internet-archive-demo` |
+| life.exe | https://life.3301studios.com/ | `life-exe` |
+| Bonkler Battle | https://bonkler.3301studios.com/ | `bonkler-game` |
+| Dead Internet Archive | https://dia.3301studios.com/ | `dead-internet-archive-demo` |
 | EMP | https://emp.orionterminal.app/ | `emp-site` |
 | Archives 47 | https://archives.orionterminal.app/ | `archives-site` |
 

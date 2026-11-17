@@ -57,7 +57,7 @@ export const PROJECTS = [
     status: "RUNNING",
     statusNote: "public · npm: joustx",
     uptime: "5MO",
-    cta: { kind: "external", label: "Launch Joust", href: "https://joust.chakraportfolio.xyz/" },
+    cta: { kind: "external", label: "Launch Joust", href: "https://joust.3301studios.com/" },
   },
   {
     id: "widow",
@@ -75,7 +75,7 @@ export const PROJECTS = [
     statusNote: "public · npm: blackwidowx",
     uptime: "4MO",
     coreShift: 3.6, // give the web room to read against the dark
-    cta: { kind: "external", label: "Visit Black Widow", href: "https://blackwidow.chakraportfolio.xyz/" },
+    cta: { kind: "external", label: "Visit Black Widow", href: "https://blackwidow.3301studios.com/" },
   },
   {
     id: "forge",
@@ -93,7 +93,7 @@ export const PROJECTS = [
     statusNote: "live · client-side",
     uptime: "7MO",
     coreShift: 4.5,
-    cta: { kind: "external", label: "Launch Forge Studio", href: "https://web3forge.chakraportfolio.xyz/" },
+    cta: { kind: "external", label: "Launch Forge Studio", href: "https://web3forge.3301studios.com/" },
   },
   {
     id: "finders",
@@ -129,7 +129,7 @@ export const PROJECTS = [
     statusNote: "live prototype · research use only",
     uptime: "1MO",
     coreShift: 4.4, // fluid field + molecular pair own the open side of the stage
-    cta: { kind: "external", label: "Enter life.exe", href: "https://life.chakraportfolio.xyz/" },
+    cta: { kind: "external", label: "Enter life.exe", href: "https://life.3301studios.com/" },
   },
   {
     id: "bonkler",
@@ -147,7 +147,7 @@ export const PROJECTS = [
     statusNote: "live · build 1.8.1 · instant demo mode",
     uptime: "1MO",
     coreShift: 4.7,
-    cta: { kind: "external", label: "Play Bonkler Battle", href: "https://bonkler.chakraportfolio.xyz/" },
+    cta: { kind: "external", label: "Play Bonkler Battle", href: "https://bonkler.3301studios.com/" },
   },
   {
     id: "dia",
@@ -165,7 +165,7 @@ export const PROJECTS = [
     statusNote: "live demo storefront · payments offline",
     uptime: "1MO",
     coreShift: 6.2,
-    cta: { kind: "external", label: "Enter Demo Store", href: "https://dia.chakraportfolio.xyz/" },
+    cta: { kind: "external", label: "Enter Demo Store", href: "https://dia.3301studios.com/" },
   },
   {
     id: "emp",
